@@ -14,7 +14,7 @@ public class PersonnelListController {
 
     private final PersonnelListService personnelListService;
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<List<PersonnelListResponse>> personnelList(){
         List<PersonnelListResponse> responseDto = personnelListService.personnelList();
 

@@ -16,7 +16,7 @@ public class PersonnelListService {
 
     public List<PersonnelListDto> personnelList(){
         List<PersonnelListDto> personnelListResponse = personnelListRepository.findAll().stream()
-            .map(personnel -> getPersonnelListDto(personnel))
+            .map(this::getPersonnelListDto)
             .collect(Collectors.toList());
 
         return personnelListResponse;

@@ -1,1 +1,18 @@
+spring:
+  profiles:
+    include: API-KEY
+  datasource:
+    url: jdbc:mysql://localhost:3306/ministry_of_education?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: dnch
+    password: ${MYSQL_PASSWORD}
 
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: create

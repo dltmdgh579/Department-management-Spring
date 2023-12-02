@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Builder
 public class PersonnelListDto {
 
+    private Long id;
     private String name;
     private LocalDate dateOfBirth;
     private String phone;
@@ -21,8 +22,9 @@ public class PersonnelListDto {
 
     private PersonnelListDto(){}
 
-    public PersonnelListDto(String name, LocalDate dateOfBirth, String phone, String landline, String email,
+    public PersonnelListDto(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
                             String address, String profileImage, Department department){
+        this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;

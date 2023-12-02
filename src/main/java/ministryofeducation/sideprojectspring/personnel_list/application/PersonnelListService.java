@@ -24,6 +24,7 @@ public class PersonnelListService {
 
     public PersonnelListDto getPersonnelListDto(Personnel personnel){
         return PersonnelListDto.builder()
+                .id(personnel.getId())
                 .name(personnel.getName())
                 .dateOfBirth(personnel.getDateOfBirth())
                 .phone(personnel.getPhone())

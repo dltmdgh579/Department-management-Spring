@@ -1,11 +1,11 @@
-package ministryofeducation.sideprojectspring.personnel_list.application;
+package ministryofeducation.sideprojectspring.personnel.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import ministryofeducation.sideprojectspring.personnel_list.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel_list.infrastructure.PersonnelListRepository;
-import ministryofeducation.sideprojectspring.personnel_list.presentation.dto.response.PersonnelListDto;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelListRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListDto;
 import org.springframework.stereotype.Service;
 
 @Service

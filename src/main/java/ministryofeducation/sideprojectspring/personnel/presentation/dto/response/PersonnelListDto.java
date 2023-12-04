@@ -1,8 +1,8 @@
-package ministryofeducation.sideprojectspring.personnel_list.presentation.dto.response;
+package ministryofeducation.sideprojectspring.personnel.presentation.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import ministryofeducation.sideprojectspring.personnel_list.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
 
 import java.time.LocalDate;
 

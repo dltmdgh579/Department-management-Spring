@@ -6,8 +6,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import java.util.Optional;
 import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -39,6 +42,19 @@ class PersonnelServiceTest {
 
         //then
         assertThat(personnelList.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void Personnel_id로_인원_상세정보를_조회할_수_있다(){
+        //given
+        Personnel testPersonnel = testPersonnel("test1");
+        doReturn(Optional.of(testPersonnel)).when(personnelRepository).findById(1l);
+
+        //when
+        PersonnelDetailResponse personnelDetail = personnelService.personnelDetail(1l);
+
+        //then
+        assertThat(personnelDetail.getName()).isEqualTo("test1");
     }
 
 }

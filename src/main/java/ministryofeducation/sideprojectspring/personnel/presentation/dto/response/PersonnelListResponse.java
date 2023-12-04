@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class PersonnelListDto {
+public class PersonnelListResponse {
 
     private Long id;
     private String name;
@@ -20,9 +20,9 @@ public class PersonnelListDto {
     private String profileImage;
     private Department department;
 
-    private PersonnelListDto(){}
+    private PersonnelListResponse(){}
 
-    public PersonnelListDto(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
+    public PersonnelListResponse(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
                             String address, String profileImage, Department department){
         this.id = id;
         this.name = name;

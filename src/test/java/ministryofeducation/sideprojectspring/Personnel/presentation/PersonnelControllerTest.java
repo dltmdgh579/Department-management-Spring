@@ -1,4 +1,4 @@
-package ministryofeducation.sideprojectspring.Personnel_list.presentation;
+package ministryofeducation.sideprojectspring.Personnel.presentation;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static org.hamcrest.Matchers.*;
@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import lombok.extern.slf4j.Slf4j;
-import ministryofeducation.sideprojectspring.personnel.application.PersonnelListService;
-import ministryofeducation.sideprojectspring.personnel.presentation.PersonnelListController;
+import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
+import ministryofeducation.sideprojectspring.personnel.presentation.PersonnelController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -27,25 +27,25 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 @Slf4j
-class PersonnelListControllerTest {
+class PersonnelControllerTest {
 
     @InjectMocks
-    private PersonnelListController personnelListController;
+    private PersonnelController personnelController;
 
     @Mock
-    private PersonnelListService personnelListService;
+    private PersonnelService personnelService;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     public void init(){
-        mockMvc = MockMvcBuilders.standaloneSetup(personnelListController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(personnelController).build();
     }
 
     @Test
     public void GET_요청으로_전체_인원_리스트를_조회할_수_있다() throws Exception {
         //given
-        doReturn(testPersonnelList()).when(personnelListService).personnelList();
+        doReturn(testPersonnelList()).when(personnelService).personnelList();
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/list"));

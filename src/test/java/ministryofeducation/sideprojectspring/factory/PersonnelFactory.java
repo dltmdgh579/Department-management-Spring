@@ -1,7 +1,7 @@
 package ministryofeducation.sideprojectspring.factory;
 
-import ministryofeducation.sideprojectspring.personnel_list.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel_list.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
 
 import java.time.LocalDate;
 import java.util.List;

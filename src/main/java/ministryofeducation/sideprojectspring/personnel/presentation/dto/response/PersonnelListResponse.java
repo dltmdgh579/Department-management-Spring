@@ -2,6 +2,7 @@ package ministryofeducation.sideprojectspring.personnel.presentation.dto.respons
 
 import lombok.Builder;
 import lombok.Getter;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
 
 import java.time.LocalDate;
@@ -29,6 +30,16 @@ public class PersonnelListResponse {
         this.address = address;
         this.profileImage = profileImage;
         this.department = department;
+    }
+
+    public PersonnelListResponse(Personnel personnel){
+        this.id = personnel.getId();
+        this.name = personnel.getName();
+        this.dateOfBirth = personnel.getDateOfBirth();
+        this.phone = personnel.getPhone();
+        this.address = personnel.getAddress();
+        this.profileImage = personnel.getProfileImage();
+        this.department = personnel.getDepartment();
     }
 
 }

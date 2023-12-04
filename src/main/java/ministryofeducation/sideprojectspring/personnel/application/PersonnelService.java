@@ -20,7 +20,7 @@ public class PersonnelService {
 
     public List<PersonnelListResponse> personnelList(){
         List<PersonnelListResponse> personnelListResponse = personnelRepository.findAll().stream()
-            .map(this::getPersonnelListDto)
+            .map(PersonnelListResponse::new)
             .collect(Collectors.toList());
 
         return personnelListResponse;
@@ -31,18 +31,6 @@ public class PersonnelService {
 
         PersonnelDetailResponse responseDto = toPersonnelDetailResponse(personnel);
         return responseDto;
-    }
-
-    public PersonnelListResponse getPersonnelListDto(Personnel personnel){
-        return PersonnelListResponse.builder()
-                .id(personnel.getId())
-                .name(personnel.getName())
-                .dateOfBirth(personnel.getDateOfBirth())
-                .phone(personnel.getPhone())
-                .address(personnel.getAddress())
-                .profileImage(personnel.getProfileImage())
-                .department(personnel.getDepartment())
-                .build();
     }
 
 }

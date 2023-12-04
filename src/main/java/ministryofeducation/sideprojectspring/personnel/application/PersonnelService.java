@@ -29,8 +29,7 @@ public class PersonnelService {
     public PersonnelDetailResponse personnelDetail(Long id){
         Personnel personnel = personnelRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
 
-        PersonnelDetailResponse responseDto = toPersonnelDetailResponse(personnel);
-        return responseDto;
+        return PersonnelDetailResponse.from(personnel);
     }
 
 }

@@ -1,12 +1,11 @@
-package ministryofeducation.sideprojectspring.personnel_list.domain;
+package ministryofeducation.sideprojectspring.personnel.domain;
 
 import static lombok.AccessLevel.*;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ministryofeducation.sideprojectspring.personnel_list.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
 
 import java.time.LocalDate;
 

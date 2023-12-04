@@ -1,9 +1,7 @@
 package ministryofeducation.sideprojectspring.Personnel_list.infrastructure;
 
-import ministryofeducation.sideprojectspring.factory.PersonnelFactory;
-import ministryofeducation.sideprojectspring.personnel_list.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel_list.infrastructure.PersonnelListRepository;
-import org.assertj.core.api.Assertions;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelListRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

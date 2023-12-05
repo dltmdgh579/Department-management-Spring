@@ -46,7 +46,7 @@ jobs:
         chmod +x gradlew
     
     # build with gradle
-    - name: Build with Gradle member
+    - name: Build with Gradle
       run: |
         ./gradlew clean build
     
@@ -54,7 +54,6 @@ jobs:
     - name: Build Docker image
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        cd member/
         docker build --tag ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0 .
         
     - name: Push Docker image

@@ -2,7 +2,7 @@ spring:
   profiles:
     include: API-KEY
   datasource:
-    url: jdbc:mysql://localhost:3306/ministry_of_education?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://mysql:3306/ministry_of_education?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: dnch
     password: ${MYSQL_PASSWORD}

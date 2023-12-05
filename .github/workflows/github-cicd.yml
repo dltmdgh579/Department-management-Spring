@@ -54,6 +54,7 @@ jobs:
     - name: Build Docker image
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        echo "$(pwd)"
         docker build --tag ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0 .
         
     - name: Push Docker image

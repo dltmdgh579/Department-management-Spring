@@ -1,0 +1,67 @@
+env:
+  # docker push 명령어를 사용할 경우 login이 필요. 이를 구분하고 필요시에만 로그인하도록 보안성 측면의 설정
+  IS_PUSH: ${{ github.event_name != 'pull_request' }}
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 설정파일 추가
+    - name: Set YML
+      run: |
+        echo "${{ secrets.API-KEY }}" | base64 --decode > ./src/main/resources/application-API-KEY.yml
+
+    # gradle 권한 부여
+    - name: Grant execute permission form gradlew
+      run: |
+        chmod +x gradlew
+    
+    # build with gradle
+    - name: Build with Gradle member
+      run: |
+        ./gradlew clean build
+    
+    # Docker build and push
+    - name: Build Docker image
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        cd member/
+        docker build --tag ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0 .
+        
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0
+
+    - name: Docker logout
+      run: docker logout
+
+    # deploy
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
+          sudo docker stop dnch-edu-service
+          sudo docker rm dnch-edu-service
+          sudo docker rmi -f ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0
+          sudo docker run -d --name dnch-edu-service ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0

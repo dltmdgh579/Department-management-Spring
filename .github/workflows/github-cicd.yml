@@ -27,7 +27,7 @@ jobs:
     # 설정파일 추가
     - name: Set YML
       run: |
-        echo "${{ secrets.API-KEY }}" | base64 --decode > ./src/main/resources/application-API-KEY.yml
+        echo "${{ secrets.API_KEY }}" | base64 --decode > ./src/main/resources/application-API-KEY.yml
 
     # gradle 권한 부여
     - name: Grant execute permission form gradlew

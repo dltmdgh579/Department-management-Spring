@@ -35,7 +35,7 @@ public class PersonnelDetailResponse {
         this.department = department;
     }
 
-    public static PersonnelDetailResponse toPersonnelDetailResponse(Personnel personnel){
+    public static PersonnelDetailResponse from(Personnel personnel){
         return PersonnelDetailResponse.builder()
             .id(personnel.getId())
             .name(personnel.getName())

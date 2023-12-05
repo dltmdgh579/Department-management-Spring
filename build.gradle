@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'ministryofeducation'
-version = '1.0s'
+version = '1.0'
 
 java {
 	sourceCompatibility = '17'

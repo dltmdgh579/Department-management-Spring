@@ -18,8 +18,7 @@ public class SideprojectSpringApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("http://dnch-edu.com:3000");
-				registry.addMapping("/**").allowedOrigins("http://dnch-edu-service-react:3000");
+				registry.addMapping("/**").allowedOrigins("http://dnch-edu.com:3000", "http://dnch-edu-service-react:3000");
 			}
 		};
 	}

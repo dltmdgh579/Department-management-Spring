@@ -22,18 +22,19 @@ public class DepartmentService {
     private final AttendanceRepository attendanceRepository;
 
     public DepartmentInfoResponse getDepartmentInfo(Long departmentId){
-        List<SmallGroup> smallGroups = smallGroupRepository.findByDepartmentId(departmentId);
         Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndDepartmentId(LocalDate.now(), departmentId).intValue();
         Integer departmentEnrollment = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new IllegalArgumentException()).getEnrollment();
 
-        List<SmallGroupInfo> smallGroupInfoList = smallGroups.stream()
+        // smallGroupInfo 리스트 생성
+        List<SmallGroupInfo> smallGroupInfoList = smallGroupRepository.findByDepartmentId(departmentId).stream()
             .map(smallGroup -> SmallGroupInfo.builder()
                 .name(smallGroup.getName())
                 .leader(smallGroup.getLeader())
                 .build())
             .collect(Collectors.toList());
 
+        // responseDto 생성
         return DepartmentInfoResponse.builder()
             .smallGroupInfoList(smallGroupInfoList)
             .attendance(thisWeekAttendance)

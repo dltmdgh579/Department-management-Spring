@@ -20,7 +20,7 @@ public class PersonnelService {
 
     public List<PersonnelListResponse> personnelList(){
         List<PersonnelListResponse> personnelListResponse = personnelRepository.findAll().stream()
-            .map(PersonnelListResponse::new)
+            .map(PersonnelListResponse::of)
             .collect(Collectors.toList());
 
         return personnelListResponse;
@@ -29,7 +29,7 @@ public class PersonnelService {
     public PersonnelDetailResponse personnelDetail(Long id){
         Personnel personnel = personnelRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
 
-        return PersonnelDetailResponse.from(personnel);
+        return PersonnelDetailResponse.of(personnel);
     }
 
 }

@@ -5,12 +5,18 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class DepartmentInfoResponse {
 
     private List<SmallGroupInfo> smallGroupInfoList;
     private Integer enrollment;
     private Integer attendance;
+
+    @Builder
+    public DepartmentInfoResponse(List<SmallGroupInfo> smallGroupInfoList, Integer enrollment, Integer attendance){
+        this.smallGroupInfoList = smallGroupInfoList;
+        this.enrollment = enrollment;
+        this.attendance = attendance;
+    }
 
     @Getter
     @Builder

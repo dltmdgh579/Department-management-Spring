@@ -7,7 +7,6 @@ import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
 
 @Getter
-@Builder
 public class PersonnelDetailResponse {
 
     private Long id;
@@ -22,6 +21,7 @@ public class PersonnelDetailResponse {
 
     private PersonnelDetailResponse(){}
 
+    @Builder
     public PersonnelDetailResponse(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
         String address, String profileImage, Department department){
         this.id = id;
@@ -35,7 +35,7 @@ public class PersonnelDetailResponse {
         this.department = department;
     }
 
-    public static PersonnelDetailResponse from(Personnel personnel){
+    public static PersonnelDetailResponse of(Personnel personnel){
         return PersonnelDetailResponse.builder()
             .id(personnel.getId())
             .name(personnel.getName())

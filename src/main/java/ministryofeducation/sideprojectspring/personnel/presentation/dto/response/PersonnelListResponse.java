@@ -8,7 +8,6 @@ import ministryofeducation.sideprojectspring.personnel.domain.department.Departm
 import java.time.LocalDate;
 
 @Getter
-@Builder
 public class PersonnelListResponse {
 
     private Long id;
@@ -21,6 +20,7 @@ public class PersonnelListResponse {
 
     private PersonnelListResponse(){}
 
+    @Builder
     public PersonnelListResponse(Long id, String name, LocalDate dateOfBirth, String phone,
                             String address, String profileImage, Department department){
         this.id = id;
@@ -32,14 +32,16 @@ public class PersonnelListResponse {
         this.department = department;
     }
 
-    public PersonnelListResponse(Personnel personnel){
-        this.id = personnel.getId();
-        this.name = personnel.getName();
-        this.dateOfBirth = personnel.getDateOfBirth();
-        this.phone = personnel.getPhone();
-        this.address = personnel.getAddress();
-        this.profileImage = personnel.getProfileImage();
-        this.department = personnel.getDepartment();
+    public static PersonnelListResponse of(Personnel personnel){
+        return PersonnelListResponse.builder()
+                .id(personnel.getId())
+                .name(personnel.getName())
+                .dateOfBirth(personnel.getDateOfBirth())
+                .phone(personnel.getPhone())
+                .address(personnel.getAddress())
+                .profileImage(personnel.getProfileImage())
+                .department(personnel.getDepartment())
+                .build();
     }
 
 }

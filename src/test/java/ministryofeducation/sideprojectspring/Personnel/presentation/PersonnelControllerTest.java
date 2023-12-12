@@ -69,7 +69,7 @@ class PersonnelControllerTest {
     @Test
     public void GET_요청으로_인원_상세정보를_조회할_수_있다() throws Exception{
         //given
-        doReturn(PersonnelDetailResponse.from(testPersonnel("test1"))).when(personnelService).personnelDetail(1l);
+        doReturn(PersonnelDetailResponse.of(testPersonnel("test1"))).when(personnelService).personnelDetail(1l);
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/detail/1"));

@@ -31,7 +31,7 @@ class PersonnelListResponseTest {
             .phone("010-0000-0000")
             .address("인천광역시 서구 신현동")
             .profileImage("testImage.jpg")
-            .department(DepartmentType.JOSHUA)
+            .departmentType(DepartmentType.JOSHUA)
             .build();
 
         //then

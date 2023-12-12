@@ -3,7 +3,7 @@ package ministryofeducation.sideprojectspring.personnel.presentation.dto.respons
 import lombok.Builder;
 import lombok.Getter;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 import java.time.LocalDate;
 
@@ -16,20 +16,20 @@ public class PersonnelListResponse {
     private String phone;
     private String address;
     private String profileImage;
-    private Department department;
+    private DepartmentType departmentType;
 
     private PersonnelListResponse(){}
 
     @Builder
     public PersonnelListResponse(Long id, String name, LocalDate dateOfBirth, String phone,
-                            String address, String profileImage, Department department){
+                            String address, String profileImage, DepartmentType departmentType){
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
         this.address = address;
         this.profileImage = profileImage;
-        this.department = department;
+        this.departmentType = departmentType;
     }
 
     public static PersonnelListResponse of(Personnel personnel){
@@ -40,7 +40,7 @@ public class PersonnelListResponse {
                 .phone(personnel.getPhone())
                 .address(personnel.getAddress())
                 .profileImage(personnel.getProfileImage())
-                .department(personnel.getDepartment())
+                .departmentType(personnel.getDepartmentType())
                 .build();
     }
 

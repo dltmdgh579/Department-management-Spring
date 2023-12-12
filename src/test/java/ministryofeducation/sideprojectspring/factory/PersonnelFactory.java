@@ -1,7 +1,7 @@
 package ministryofeducation.sideprojectspring.factory;
 
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,7 +17,7 @@ public class PersonnelFactory {
                 "testEmail@gmail.com",
                 "인천광역시 서구 석남동",
                 "",
-                Department.JOSHUA
+                DepartmentType.JOSHUA
         );
     }
 

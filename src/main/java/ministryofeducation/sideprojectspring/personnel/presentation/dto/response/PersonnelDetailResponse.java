@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 @Getter
 public class PersonnelDetailResponse {
@@ -17,13 +17,13 @@ public class PersonnelDetailResponse {
     private String email;
     private String address;
     private String profileImage;
-    private Department department;
+    private DepartmentType departmentType;
 
     private PersonnelDetailResponse(){}
 
     @Builder
     public PersonnelDetailResponse(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
-        String address, String profileImage, Department department){
+        String address, String profileImage, DepartmentType departmentType){
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -32,7 +32,7 @@ public class PersonnelDetailResponse {
         this.email = email;
         this.address = address;
         this.profileImage = profileImage;
-        this.department = department;
+        this.departmentType = departmentType;
     }
 
     public static PersonnelDetailResponse of(Personnel personnel){
@@ -45,7 +45,7 @@ public class PersonnelDetailResponse {
             .email(personnel.getEmail())
             .address(personnel.getAddress())
             .profileImage(personnel.getProfileImage())
-            .department(personnel.getDepartment())
+            .departmentType(personnel.getDepartmentType())
             .build();
     }
 }

@@ -5,7 +5,7 @@ import static lombok.AccessLevel.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ministryofeducation.sideprojectspring.personnel.domain.department.Department;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 import java.time.LocalDate;
 
@@ -33,10 +33,10 @@ public class Personnel {
     private String profileImage;
 
     @Enumerated(EnumType.STRING)
-    private Department department;
+    private DepartmentType departmentType;
 
     public Personnel(String name, LocalDate dateOfBirth, String phone, String landline, String email,
-                     String address, String profileImage, Department department) {
+                     String address, String profileImage, DepartmentType departmentType) {
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
@@ -44,6 +44,6 @@ public class Personnel {
         this.email = email;
         this.address = address;
         this.profileImage = profileImage;
-        this.department = department;
+        this.departmentType = departmentType;
     }
 }

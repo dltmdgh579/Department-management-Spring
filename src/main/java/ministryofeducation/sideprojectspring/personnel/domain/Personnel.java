@@ -5,6 +5,7 @@ import static lombok.AccessLevel.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ministryofeducation.sideprojectspring.common.BaseEntity;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class Personnel {
+public class Personnel extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

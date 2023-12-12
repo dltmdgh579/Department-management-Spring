@@ -11,11 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import lombok.Getter;
+import ministryofeducation.sideprojectspring.common.BaseEntity;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 
 @Entity
-public class Attendance {
+public class Attendance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

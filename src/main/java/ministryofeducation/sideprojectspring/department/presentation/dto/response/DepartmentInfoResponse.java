@@ -12,10 +12,18 @@ public class DepartmentInfoResponse {
     private Integer attendance;
 
     @Builder
-    public DepartmentInfoResponse(List<SmallGroupInfo> smallGroupInfoList, Integer enrollment, Integer attendance){
+    private DepartmentInfoResponse(List<SmallGroupInfo> smallGroupInfoList, Integer enrollment, Integer attendance){
         this.smallGroupInfoList = smallGroupInfoList;
         this.enrollment = enrollment;
         this.attendance = attendance;
+    }
+
+    public static DepartmentInfoResponse of(List<SmallGroupInfo> smallGroupInfoList, Integer enrollment, Integer attendance){
+        return DepartmentInfoResponse.builder()
+            .smallGroupInfoList(smallGroupInfoList)
+            .enrollment(enrollment)
+            .attendance(attendance)
+            .build();
     }
 
     @Getter

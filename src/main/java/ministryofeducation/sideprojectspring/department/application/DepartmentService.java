@@ -24,22 +24,23 @@ public class DepartmentService {
     public DepartmentInfoResponse getDepartmentInfo(Long departmentId){
         Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndDepartmentId(LocalDate.now(), departmentId).intValue();
         Integer departmentEnrollment = departmentRepository.findById(departmentId)
-            .orElseThrow(() -> new IllegalArgumentException()).getEnrollment();
+            .map(Department::getEnrollment)
+            .orElseThrow(() -> new IllegalArgumentException());
 
         // smallGroupInfo 리스트 생성
-        List<SmallGroupInfo> smallGroupInfoList = smallGroupRepository.findByDepartmentId(departmentId).stream()
+        List<SmallGroupInfo> smallGroupInfoList = getSmallGroupInfoList(departmentId);
+
+        // responseDto 생성
+        return DepartmentInfoResponse.of(smallGroupInfoList, departmentEnrollment, thisWeekAttendance);
+    }
+
+    private List<SmallGroupInfo> getSmallGroupInfoList(Long departmentId) {
+        return smallGroupRepository.findByDepartmentId(departmentId).stream()
             .map(smallGroup -> SmallGroupInfo.builder()
                 .name(smallGroup.getName())
                 .leader(smallGroup.getLeader())
                 .build())
             .collect(Collectors.toList());
-
-        // responseDto 생성
-        return DepartmentInfoResponse.builder()
-            .smallGroupInfoList(smallGroupInfoList)
-            .attendance(thisWeekAttendance)
-            .enrollment(departmentEnrollment)
-            .build();
     }
 
 }

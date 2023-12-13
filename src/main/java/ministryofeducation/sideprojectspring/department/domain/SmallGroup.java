@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
@@ -28,6 +29,23 @@ public class SmallGroup extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
+
+    @Builder
+    private SmallGroup(Long id, String name, String leader, Department department){
+        this.id = id;
+        this.name = name;
+        this.leader = leader;
+        this.department = department;
+    }
+
+    public static SmallGroup createSmallGroup(Long id, String name, String leader, Department department){
+        return SmallGroup.builder()
+            .id(id)
+            .name(name)
+            .leader(leader)
+            .department(department)
+            .build();
+    }
 
 
 

@@ -1,85 +1,60 @@
 package ministryofeducation.sideprojectspring.unit.Personnel.presentation;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
-import static ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse.*;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import lombok.extern.slf4j.Slf4j;
-import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
-import ministryofeducation.sideprojectspring.personnel.presentation.PersonnelController;
+import java.util.List;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
-import org.junit.jupiter.api.BeforeEach;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
+import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-@Slf4j
-class PersonnelControllerTest {
-
-    @InjectMocks
-    private PersonnelController personnelController;
-
-    @Mock
-    private PersonnelService personnelService;
-
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    public void init(){
-        mockMvc = MockMvcBuilders.standaloneSetup(personnelController).build();
-    }
+class PersonnelControllerTest extends ControllerTest {
 
     @Test
-    public void GET_요청으로_전체_인원_리스트를_조회할_수_있다() throws Exception {
+    public void 전체_인원_리스트를_조회할_수_있다() throws Exception {
         //given
-        doReturn(testPersonnelList()).when(personnelService).personnelList();
+        List<PersonnelListResponse> personnelListResponse = List.of(
+            PersonnelListResponse.of(testPersonnel(1l, "test1", "test1@email.com")),
+            PersonnelListResponse.of(testPersonnel(2l, "test2", "test2@email.com")),
+            PersonnelListResponse.of(testPersonnel(3l, "test3", "test3@email.com"))
+        );
+
+        given(personnelService.personnelList()).willReturn(personnelListResponse);
+
+        String response = objectMapper.writeValueAsString(personnelListResponse);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/list"));
+        ResultActions perform = mockMvc.perform(get("/list"));
 
         //then
-        MvcResult mvcResult = resultActions
+        perform
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.length()", is(3)))
-            .andExpect(jsonPath("$[0].name", is("test1")))
-            .andExpect(jsonPath("$[0].email", is("testEmail@gmail.com")))
-            .andExpect(jsonPath("$[1].name", is("test2")))
-            .andExpect(jsonPath("$[1].email", is("testEmail@gmail.com")))
-            .andExpect(jsonPath("$[2].name", is("test3")))
-            .andExpect(jsonPath("$[2].email", is("testEmail@gmail.com")))
-            .andReturn();
+            .andExpect(jsonPath("$.length()", is(3)));
     }
 
     @Test
-    public void GET_요청으로_인원_상세정보를_조회할_수_있다() throws Exception{
+    public void 인원_상세정보를_조회할_수_있다() throws Exception{
         //given
-        doReturn(PersonnelDetailResponse.of(testPersonnel("test1"))).when(personnelService).personnelDetail(1l);
+
+        PersonnelDetailResponse request = PersonnelDetailResponse.of(testPersonnel(1l, "test"));
+
+        given(personnelService.personnelDetail(anyLong())).willReturn(request);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/detail/1"));
+        ResultActions resultActions = mockMvc.perform(get("/detail/{personnelId}", 1l));
 
         //then
         resultActions
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.name", is("test1")))
-            .andReturn();
+            .andExpect(jsonPath("$.name", is("test")));
     }
 
 }

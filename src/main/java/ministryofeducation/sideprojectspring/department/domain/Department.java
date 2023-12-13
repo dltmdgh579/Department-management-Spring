@@ -5,10 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
@@ -25,5 +23,20 @@ public class Department extends BaseEntity {
     private String name;
 
     private Integer enrollment;
+
+    @Builder
+    private Department(Long id, String name, Integer enrollment){
+        this.id = id;
+        this.name = name;
+        this.enrollment = enrollment;
+    }
+
+    public static Department createDepartment(Long id, String name, Integer enrollment){
+        return Department.builder()
+            .id(id)
+            .name(name)
+            .enrollment(enrollment)
+            .build();
+    }
 
 }

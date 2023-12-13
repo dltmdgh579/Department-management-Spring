@@ -3,6 +3,7 @@ package ministryofeducation.sideprojectspring.personnel.domain;
 import static lombok.AccessLevel.*;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
@@ -36,8 +37,10 @@ public class Personnel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DepartmentType departmentType;
 
-    public Personnel(String name, LocalDate dateOfBirth, String phone, String landline, String email,
+    @Builder
+    private Personnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
                      String address, String profileImage, DepartmentType departmentType) {
+        this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
@@ -46,5 +49,20 @@ public class Personnel extends BaseEntity {
         this.address = address;
         this.profileImage = profileImage;
         this.departmentType = departmentType;
+    }
+
+    public static Personnel createPersonnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
+        String address, String profileImage, DepartmentType departmentType) {
+        return Personnel.builder()
+            .id(id)
+            .name(name)
+            .dateOfBirth(dateOfBirth)
+            .phone(phone)
+            .landline(landline)
+            .email(email)
+            .address(address)
+            .profileImage(profileImage)
+            .departmentType(departmentType)
+            .build();
     }
 }

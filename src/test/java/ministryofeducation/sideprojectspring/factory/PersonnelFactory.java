@@ -8,24 +8,26 @@ import java.util.List;
 
 public class PersonnelFactory {
 
-    public static Personnel testPersonnel(String name){
-        return new Personnel(
-                name,
-                LocalDate.now(),
-                "010-0000-0000",
-                "032-000-0000",
-                "testEmail@gmail.com",
-                "인천광역시 서구 석남동",
-                "",
-                DepartmentType.JOSHUA
+    public static Personnel testPersonnel(Long id, String name, String email, String phone){
+        return Personnel.createPersonnel(
+            id,
+            name,
+            LocalDate.now(),
+            phone,
+            "032-000-0000",
+            email,
+            "인천광역시 서구 석남동",
+            "",
+            DepartmentType.JOSHUA
         );
     }
 
-    public static List<Personnel> testPersonnelList(){
-        return List.of(
-                testPersonnel("test1"),
-                testPersonnel("test2"),
-                testPersonnel("test3")
-        );
+    public static Personnel testPersonnel(Long id, String name){
+        return testPersonnel(id, name, "test@email.com", "010-0000-0000");
     }
+
+    public static Personnel testPersonnel(Long id, String name, String email){
+        return testPersonnel(id, name, email, "010-0000-0000");
+    }
+
 }

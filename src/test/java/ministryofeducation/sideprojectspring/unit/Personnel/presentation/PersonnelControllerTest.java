@@ -37,16 +37,16 @@ class PersonnelControllerTest extends ControllerTest {
         //then
         perform
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()", is(3)));
+            .andExpect(jsonPath("$.length()").value(3));
     }
 
     @Test
     public void 인원_상세정보를_조회할_수_있다() throws Exception{
         //given
 
-        PersonnelDetailResponse request = PersonnelDetailResponse.of(testPersonnel(1l, "test"));
+        PersonnelDetailResponse response = PersonnelDetailResponse.of(testPersonnel(1l, "test"));
 
-        given(personnelService.personnelDetail(anyLong())).willReturn(request);
+        given(personnelService.personnelDetail(anyLong())).willReturn(response);
 
         //when
         ResultActions resultActions = mockMvc.perform(get("/detail/{personnelId}", 1l));
@@ -54,7 +54,7 @@ class PersonnelControllerTest extends ControllerTest {
         //then
         resultActions
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name", is("test")));
+            .andExpect(jsonPath("$.name").value("test"));
     }
 
 }

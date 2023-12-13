@@ -26,9 +26,9 @@ class PersonnelRepositoryTest {
     @Test
     void 개인정보_전체_리스트를_불러온다(){
         // given
-        Personnel personnel1 = testPersonnel("test1", "test1@email.com");
-        Personnel personnel2 = testPersonnel("test2", "test2@email.com");
-        Personnel personnel3 = testPersonnel("test3", "test3@email.com");
+        Personnel personnel1 = testPersonnel(1l, "test1", "test1@email.com");
+        Personnel personnel2 = testPersonnel(2l, "test2", "test2@email.com");
+        Personnel personnel3 = testPersonnel(3l, "test3", "test3@email.com");
         personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
 
         // when

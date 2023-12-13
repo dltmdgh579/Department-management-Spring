@@ -38,8 +38,9 @@ public class Personnel extends BaseEntity {
     private DepartmentType departmentType;
 
     @Builder
-    private Personnel(String name, LocalDate dateOfBirth, String phone, String landline, String email,
+    private Personnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
                      String address, String profileImage, DepartmentType departmentType) {
+        this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
@@ -50,9 +51,10 @@ public class Personnel extends BaseEntity {
         this.departmentType = departmentType;
     }
 
-    public static Personnel createPersonnel(String name, LocalDate dateOfBirth, String phone, String landline, String email,
+    public static Personnel createPersonnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
         String address, String profileImage, DepartmentType departmentType) {
         return Personnel.builder()
+            .id(id)
             .name(name)
             .dateOfBirth(dateOfBirth)
             .phone(phone)

@@ -1,4 +1,4 @@
-package ministryofeducation.sideprojectspring.Personnel.presentation.dto.response;
+package ministryofeducation.sideprojectspring.unit.Personnel.presentation.dto.response;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -31,7 +31,7 @@ class PersonnelListResponseTest {
             .phone("010-0000-0000")
             .address("인천광역시 서구 신현동")
             .profileImage("testImage.jpg")
-            .department(DepartmentType.JOSHUA)
+            .departmentType(DepartmentType.JOSHUA)
             .build();
 
         //then

@@ -1,4 +1,4 @@
-package ministryofeducation.sideprojectspring.Personnel.infrastructure;
+package ministryofeducation.sideprojectspring.unit.Personnel.infrastructure;
 
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;

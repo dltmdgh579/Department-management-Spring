@@ -1,4 +1,4 @@
-package ministryofeducation.sideprojectspring.Personnel.application;
+package ministryofeducation.sideprojectspring.unit.Personnel.application;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static org.assertj.core.api.Assertions.*;

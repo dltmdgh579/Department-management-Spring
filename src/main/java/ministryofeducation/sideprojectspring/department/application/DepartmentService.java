@@ -43,6 +43,7 @@ public class DepartmentService {
     private List<SmallGroupInfo> getSmallGroupInfoList(Long departmentId) {
         return smallGroupRepository.findByDepartmentId(departmentId).stream()
             .map(smallGroup -> SmallGroupInfo.builder()
+                .id(smallGroup.getId())
                 .name(smallGroup.getName())
                 .leader(smallGroup.getLeader())
                 .build())

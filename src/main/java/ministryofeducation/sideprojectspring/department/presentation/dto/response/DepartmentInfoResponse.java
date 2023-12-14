@@ -29,6 +29,7 @@ public class DepartmentInfoResponse {
     @Getter
     @Builder
     public static class SmallGroupInfo {
+        private Long id;
         private String name;
         private String leader;
     }

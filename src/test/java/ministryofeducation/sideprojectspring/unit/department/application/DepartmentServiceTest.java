@@ -15,6 +15,7 @@ import ministryofeducation.sideprojectspring.department.infrastructure.Departmen
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -43,6 +44,34 @@ class DepartmentServiceTest {
 
     @InjectMocks
     private DepartmentService departmentService;
+
+    @Test
+    void 홈_화면의_부서_전체_이름을_조회한다() {
+        //given
+        Department department1 = Department.builder()
+            .id(1l)
+            .name("department1")
+            .enrollment(10)
+            .build();
+        Department department2 = Department.builder()
+            .id(2l)
+            .name("department2")
+            .enrollment(20)
+            .build();
+
+        given(departmentRepository.findAll()).willReturn(List.of(department1, department2));
+
+        //when
+        List<DepartmentNameResponse> allDepartmentResponse = departmentService.getAllDepartment();
+
+        //then
+        assertThat(allDepartmentResponse).hasSize(2)
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                tuple(1l, "department1"),
+                tuple(2l, "department2")
+            );
+    }
 
     @Test
     void 부서_정보를_조회한다() {
@@ -80,7 +109,6 @@ class DepartmentServiceTest {
                 tuple("groupName1", "leader1"),
                 tuple("groupName2", "leader2")
             );
-
     }
 
 

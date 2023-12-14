@@ -65,4 +65,8 @@ public class Personnel extends BaseEntity {
             .departmentType(departmentType)
             .build();
     }
+
+    public void changeName(String name){
+        this.name = name;
+    }
 }

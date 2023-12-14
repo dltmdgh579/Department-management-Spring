@@ -8,6 +8,7 @@ import java.util.List;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -73,6 +74,32 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.smallGroupInfoList.length()").value(2));
 
+    }
+
+    @Test
+    void 부서_내_그룹_정보를_조회한다() throws Exception{
+        //given
+        GroupInfoResponse groupInfoResponse1 = GroupInfoResponse.builder()
+            .id(1l)
+            .profileImage("profileImageUrl1")
+            .name("test1")
+            .build();
+
+        GroupInfoResponse groupInfoResponse2 = GroupInfoResponse.builder()
+            .id(2l)
+            .profileImage("profileImageUrl2")
+            .name("test2")
+            .build();
+
+        given(departmentService.getGroupInfo(anyLong(), anyLong())).willReturn(List.of(groupInfoResponse1, groupInfoResponse2));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}", anyLong(), anyLong()));
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
     }
 
 }

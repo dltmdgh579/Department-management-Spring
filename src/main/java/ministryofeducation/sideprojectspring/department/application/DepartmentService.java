@@ -11,7 +11,10 @@ import ministryofeducation.sideprojectspring.department.infrastructure.SmallGrou
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
+import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +24,7 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final SmallGroupRepository smallGroupRepository;
     private final AttendanceRepository attendanceRepository;
+    private final PersonnelRepository personnelRepository;
 
     public DepartmentInfoResponse getDepartmentInfo(Long departmentId) {
         Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndDepartmentId(LocalDate.now(),
@@ -51,4 +55,9 @@ public class DepartmentService {
             .collect(Collectors.toList());
     }
 
+    public List<GroupInfoResponse> getGroupInfo(Long departmentId, Long groupId) {
+        return personnelRepository.findByDepartmentIdAndSmallGroupId(departmentId, groupId).stream()
+            .map(GroupInfoResponse::of)
+            .collect(Collectors.toList());
+    }
 }

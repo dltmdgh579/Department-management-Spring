@@ -7,11 +7,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 
 @Entity
 @Getter
@@ -29,6 +33,9 @@ public class SmallGroup extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
+
+    @OneToMany(mappedBy = "smallGroup")
+    private List<Personnel> personnelList = new ArrayList<>();
 
     @Builder
     private SmallGroup(Long id, String name, String leader, Department department){

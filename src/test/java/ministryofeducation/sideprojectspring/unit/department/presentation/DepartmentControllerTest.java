@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -15,6 +16,29 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DepartmentControllerTest extends ControllerTest {
+
+    @Test
+    void 홈_화면의_부서_리스트를_조회한다() throws Exception{
+        //given
+        DepartmentNameResponse department1 = DepartmentNameResponse.builder()
+            .id(1l)
+            .name("department1")
+            .build();
+        DepartmentNameResponse department2 = DepartmentNameResponse.builder()
+            .id(2l)
+            .name("department2")
+            .build();
+
+        given(departmentService.getAllDepartment()).willReturn(List.of(department1, department2));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/"));
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+    }
 
     @Test
     void 부서_정보를_조회한다() throws Exception{

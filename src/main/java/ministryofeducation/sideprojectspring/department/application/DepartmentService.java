@@ -10,6 +10,7 @@ import ministryofeducation.sideprojectspring.department.infrastructure.Departmen
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,9 @@ public class DepartmentService {
     private final SmallGroupRepository smallGroupRepository;
     private final AttendanceRepository attendanceRepository;
 
-    public DepartmentInfoResponse getDepartmentInfo(Long departmentId){
-        Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndDepartmentId(LocalDate.now(), departmentId).intValue();
+    public DepartmentInfoResponse getDepartmentInfo(Long departmentId) {
+        Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndDepartmentId(LocalDate.now(),
+            departmentId).intValue();
         Integer departmentEnrollment = departmentRepository.findById(departmentId)
             .map(Department::getEnrollment)
             .orElseThrow(() -> new IllegalArgumentException());
@@ -40,6 +42,12 @@ public class DepartmentService {
                 .name(smallGroup.getName())
                 .leader(smallGroup.getLeader())
                 .build())
+            .collect(Collectors.toList());
+    }
+
+    public List<DepartmentNameResponse> getAllDepartment() {
+        return departmentRepository.findAll().stream()
+            .map(DepartmentNameResponse::of)
             .collect(Collectors.toList());
     }
 

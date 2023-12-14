@@ -1,5 +1,6 @@
 package ministryofeducation.sideprojectspring.unit.department.application;
 
+import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -16,7 +17,11 @@ import ministryofeducation.sideprojectspring.department.infrastructure.SmallGrou
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.factory.PersonnelFactory;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
+import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -41,6 +46,9 @@ class DepartmentServiceTest {
 
     @Mock
     private AttendanceRepository attendanceRepository;
+
+    @Mock
+    private PersonnelRepository personnelRepository;
 
     @InjectMocks
     private DepartmentService departmentService;
@@ -109,6 +117,30 @@ class DepartmentServiceTest {
                 tuple("groupName1", "leader1"),
                 tuple("groupName2", "leader2")
             );
+    }
+
+    @Test
+    void 부서_내_그룹_정보를_조회한다() {
+        //given
+        Department department = Department.createDepartment(1l, "department", 20);
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
+        Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
+
+        given(personnelRepository.findByDepartmentIdAndSmallGroupId(anyLong(), anyLong()))
+            .willReturn(List.of(personnel1, personnel2));
+
+        //when
+        List<GroupInfoResponse> groupInfoResponse = departmentService.getGroupInfo(department.getId(), smallGroup.getId());
+
+        //then
+        assertThat(groupInfoResponse).hasSize(2)
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                tuple(1l, "test1"),
+                tuple(2l, "test2")
+            );
+
     }
 
 

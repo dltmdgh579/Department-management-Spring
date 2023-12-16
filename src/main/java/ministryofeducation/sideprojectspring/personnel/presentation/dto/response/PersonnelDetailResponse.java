@@ -15,6 +15,7 @@ public class PersonnelDetailResponse {
     private String phone;
     private String landline;
     private String email;
+    private String workSpace;
     private String address;
     private String profileImage;
     private DepartmentType departmentType;
@@ -23,13 +24,14 @@ public class PersonnelDetailResponse {
 
     @Builder
     public PersonnelDetailResponse(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
-        String address, String profileImage, DepartmentType departmentType){
+        String workSpace, String address, String profileImage, DepartmentType departmentType){
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
         this.landline = landline;
         this.email = email;
+        this.workSpace = workSpace;
         this.address = address;
         this.profileImage = profileImage;
         this.departmentType = departmentType;
@@ -43,6 +45,7 @@ public class PersonnelDetailResponse {
             .phone(personnel.getPhone())
             .landline(personnel.getLandline())
             .email(personnel.getEmail())
+            .workSpace(personnel.getWorkSpace())
             .address(personnel.getAddress())
             .profileImage(personnel.getProfileImage())
             .departmentType(personnel.getDepartmentType())

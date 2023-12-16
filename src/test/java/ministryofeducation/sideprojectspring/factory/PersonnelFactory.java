@@ -18,6 +18,7 @@ public class PersonnelFactory {
             phone,
             "032-000-0000",
             email,
+            "고잉메리호",
             "인천광역시 서구 석남동",
             "profileImageUrl",
             DepartmentType.JOSHUA,

@@ -32,6 +32,8 @@ public class Personnel extends BaseEntity {
 
     private String email;
 
+    private String workSpace;
+
     private String address;
 
     private String profileImage;
@@ -49,13 +51,14 @@ public class Personnel extends BaseEntity {
 
     @Builder
     private Personnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
-                     String address, String profileImage, DepartmentType departmentType, Department department, SmallGroup smallGroup) {
+                     String workSpace, String address, String profileImage, DepartmentType departmentType, Department department, SmallGroup smallGroup) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
         this.landline = landline;
         this.email = email;
+        this.workSpace = workSpace;
         this.address = address;
         this.profileImage = profileImage;
         this.departmentType = departmentType;
@@ -64,7 +67,7 @@ public class Personnel extends BaseEntity {
     }
 
     public static Personnel createPersonnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
-        String address, String profileImage, DepartmentType departmentType, Department department, SmallGroup smallGroup) {
+        String workSpace, String address, String profileImage, DepartmentType departmentType, Department department, SmallGroup smallGroup) {
         return Personnel.builder()
             .id(id)
             .name(name)
@@ -72,6 +75,7 @@ public class Personnel extends BaseEntity {
             .phone(phone)
             .landline(landline)
             .email(email)
+            .workSpace(workSpace)
             .address(address)
             .profileImage(profileImage)
             .departmentType(departmentType)

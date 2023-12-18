@@ -5,14 +5,18 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import java.util.Optional;
 import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelPostResponse;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -74,4 +78,29 @@ class PersonnelServiceTest {
         verify(personnelRepository, times(1)).findById(anyLong());
     }
 
+    @Test
+    void 새로운_인원을_추가한다() {
+        //given
+        PersonnelPostRequest personnelPostRequest = PersonnelPostRequest.builder()
+            .name("test")
+            .departmentType(DepartmentType.JOSHUA)
+            .dateOfBirth(LocalDate.of(1997, 8, 26))
+            .phone("010-0000-0000")
+            .email("test@email.com")
+            .workSpace("인천대학교")
+            .address("인천광역시 서구 신현동")
+            .build();
+
+        Personnel personnel = testPersonnel(1l, "test", "test@email.com", "010-0000-0000");
+
+        given(personnelRepository.save(any(Personnel.class))).willReturn(personnel);
+
+        //when
+        PersonnelPostResponse personnelPostResponse = personnelService.personnelPost(personnelPostRequest);
+
+        //then
+        assertThat(personnelPostResponse.getName()).isEqualTo("test");
+        assertThat(personnelPostResponse.getPhone()).isEqualTo("010-0000-0000");
+
+    }
 }

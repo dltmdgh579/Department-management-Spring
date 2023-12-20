@@ -3,6 +3,8 @@ package ministryofeducation.sideprojectspring.personnel.domain;
 import static lombok.AccessLevel.*;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,6 +50,9 @@ public class Personnel extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "small_group_id")
     private SmallGroup smallGroup;
+
+    @OneToMany(mappedBy = "personnel")
+    private List<Attendance> attendanceList = new ArrayList<>();
 
     @Builder
     private Personnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,

@@ -8,6 +8,7 @@ import java.util.List;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -95,6 +96,30 @@ class DepartmentControllerTest extends ControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}", anyLong(), anyLong()));
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    void 그룹_내_결석인원을_조회한다() throws Exception {
+        //given
+        GroupAbsentInfoResponse groupAbsentInfoResponse1 = GroupAbsentInfoResponse.builder()
+            .name("test1")
+            .phone("010-0000-0001")
+            .build();
+        GroupAbsentInfoResponse groupAbsentInfoResponse2 = GroupAbsentInfoResponse.builder()
+            .name("test2")
+            .phone("010-0000-0002")
+            .build();
+
+        given(departmentService.getGroupAbsentInfo(anyLong(), anyLong()))
+            .willReturn(List.of(groupAbsentInfoResponse1, groupAbsentInfoResponse2));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}/absent", anyLong(), anyLong()));
 
         //then
         perform

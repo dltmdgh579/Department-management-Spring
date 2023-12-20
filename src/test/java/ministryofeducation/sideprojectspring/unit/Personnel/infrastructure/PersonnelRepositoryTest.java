@@ -6,8 +6,11 @@ import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
+import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
+import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,6 +26,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.Attendance.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
@@ -39,6 +44,9 @@ class PersonnelRepositoryTest {
 
     @Autowired
     private SmallGroupRepository smallGroupRepository;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
     @Test
     void 개인정보_전체_리스트를_불러온다(){
@@ -85,6 +93,36 @@ class PersonnelRepositoryTest {
             .containsExactlyInAnyOrder(
                 tuple(1l, "test1"),
                 tuple(2l, "test2"),
+                tuple(3l, "test3")
+            );
+    }
+
+    @Test
+    void 그룹_내_결석인원을_조회한다() {
+        //given
+        Department department = Department.createDepartment(1l, "department", 20);
+        departmentRepository.save(department);
+
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
+        smallGroupRepository.save(smallGroup);
+
+        Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
+        Personnel personnel3 = testPersonnel(3l, "test3", department, smallGroup);
+        personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
+
+        Attendance attendance1 = createAttendance(1l, LocalDate.now(), ABSENT, department, personnel1);
+        Attendance attendance2 = createAttendance(2l, LocalDate.now(), ABSENT, department, personnel3);
+        attendanceRepository.saveAll(List.of(attendance1, attendance2));
+
+        //when
+        List<Personnel> groupAbsentInfoResponse = personnelRepository.findByAbsentPersonnel(department.getId(), smallGroup.getId(), ABSENT);
+
+        //then
+        assertThat(groupAbsentInfoResponse).hasSize(2)
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                tuple(1l, "test1"),
                 tuple(3l, "test3")
             );
     }

@@ -1,5 +1,7 @@
 package ministryofeducation.sideprojectspring.department.application;
 
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,8 +13,10 @@ import ministryofeducation.sideprojectspring.department.infrastructure.SmallGrou
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.springframework.stereotype.Service;
@@ -59,6 +63,12 @@ public class DepartmentService {
     public List<GroupInfoResponse> getGroupInfo(Long departmentId, Long groupId) {
         return personnelRepository.findByDepartmentIdAndSmallGroupId(departmentId, groupId).stream()
             .map(GroupInfoResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public List<GroupAbsentInfoResponse> getGroupAbsentInfo(Long departmentId, Long groupId) {
+        return personnelRepository.findByAbsentPersonnel(departmentId, groupId, ABSENT).stream()
+            .map(GroupAbsentInfoResponse::of)
             .collect(Collectors.toList());
     }
 }

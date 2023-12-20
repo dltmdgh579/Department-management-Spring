@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.application.DepartmentService;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,15 @@ public class DepartmentController {
         @PathVariable("departmentId") Long departmentId,
         @PathVariable("groupId") Long groupId) {
         List<GroupInfoResponse> responseDto = departmentService.getGroupInfo(departmentId, groupId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/{departmentId}/{groupId}/absent")
+    public ResponseEntity<List<GroupAbsentInfoResponse>> groupAbsentInfo(
+        @PathVariable("departmentId") Long departmentId,
+        @PathVariable("groupId") Long groupId) {
+        List<GroupAbsentInfoResponse> responseDto = departmentService.getGroupAbsentInfo(departmentId, groupId);
 
         return ResponseEntity.ok(responseDto);
     }

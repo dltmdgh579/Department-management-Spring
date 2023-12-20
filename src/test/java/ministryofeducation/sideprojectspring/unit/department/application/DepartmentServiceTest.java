@@ -17,9 +17,11 @@ import ministryofeducation.sideprojectspring.department.infrastructure.SmallGrou
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.factory.PersonnelFactory;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.assertj.core.api.Assertions;
@@ -143,5 +145,28 @@ class DepartmentServiceTest {
 
     }
 
+    @Test
+    void 그룹_내_결석인원을_조회한다() {
+        //given
+        Department department = Department.createDepartment(1l, "department", 20);
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
+        Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
+
+        given(personnelRepository.findByAbsentPersonnel(anyLong(), anyLong(), any(AttendanceCheck.class)))
+            .willReturn(List.of(personnel1, personnel2));
+
+        //when
+        List<GroupAbsentInfoResponse> groupAbsentInfoResponse = departmentService.getGroupAbsentInfo(department.getId(),
+            smallGroup.getId());
+
+        //then
+        assertThat(groupAbsentInfoResponse).hasSize(2)
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                tuple(1l, "test1"),
+                tuple(2l, "test2")
+            );
+    }
 
 }

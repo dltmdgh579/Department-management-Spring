@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.domain.Department;
-import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.springframework.stereotype.Service;
@@ -70,5 +72,35 @@ public class DepartmentService {
         return personnelRepository.findByAbsentPersonnel(departmentId, groupId, ABSENT).stream()
             .map(GroupAbsentInfoResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public List<GroupAbsentListResponse> checkGroupAbsentInfo(Long departmentId, Long groupId,
+        GroupAbsentListRequest requestDto) {
+        List<AbsenteeInfo> absenteeList = requestDto.getAbsenteeList();
+
+        Department department = departmentRepository.findById(departmentId)
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        List<Attendance> attendanceList = absenteeList.stream()
+            .map(absenteeInfo -> buildAttendance(absenteeInfo, department))
+            .collect(Collectors.toList());
+
+        List<Attendance> savedAttendanceList = attendanceRepository.saveAll(attendanceList);
+
+        return savedAttendanceList.stream()
+            .map(GroupAbsentListResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    private Attendance buildAttendance(AbsenteeInfo absenteeInfo, Department department) {
+        Personnel personnel = personnelRepository.findById(absenteeInfo.getId())
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        return Attendance.builder()
+            .attendanceDate(absenteeInfo.getAbsentDate())
+            .attendanceCheck(ABSENT)
+            .department(department)
+            .personnel(personnel)
+            .build();
     }
 }

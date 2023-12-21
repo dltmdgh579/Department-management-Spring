@@ -20,6 +20,7 @@ import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 
 @NoArgsConstructor(access = PROTECTED)
+@Getter
 @Entity
 public class Attendance extends BaseEntity {
 

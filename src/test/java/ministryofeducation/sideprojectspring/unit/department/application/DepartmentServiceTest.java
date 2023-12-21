@@ -2,34 +2,32 @@ package ministryofeducation.sideprojectspring.unit.department.application;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import ministryofeducation.sideprojectspring.department.application.DepartmentService;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
-import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
-import ministryofeducation.sideprojectspring.factory.PersonnelFactory;
+import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -133,7 +131,8 @@ class DepartmentServiceTest {
             .willReturn(List.of(personnel1, personnel2));
 
         //when
-        List<GroupInfoResponse> groupInfoResponse = departmentService.getGroupInfo(department.getId(), smallGroup.getId());
+        List<GroupInfoResponse> groupInfoResponse = departmentService.getGroupInfo(department.getId(),
+            smallGroup.getId());
 
         //then
         assertThat(groupInfoResponse).hasSize(2)
@@ -167,6 +166,48 @@ class DepartmentServiceTest {
                 tuple(1l, "test1"),
                 tuple(2l, "test2")
             );
+    }
+
+    @Test
+    void 그룹_내_결석인원을_저장한다() {
+        //given
+        Department department = Department.createDepartment(1l, "department", 20);
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
+        Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
+        Attendance attendance1 = Attendance.createAttendance(1l, LocalDate.now(), AttendanceCheck.ABSENT, department,
+            personnel1);
+        Attendance attendance2 = Attendance.createAttendance(2l, LocalDate.now(), AttendanceCheck.ABSENT, department,
+            personnel2);
+
+
+        AbsenteeInfo absenteeInfo1 = AbsenteeInfo.builder()
+            .id(1l)
+            .name("test1")
+            .absentDate(LocalDate.now())
+            .build();
+        AbsenteeInfo absenteeInfo2 = AbsenteeInfo.builder()
+            .id(2l)
+            .name("test2")
+            .absentDate(LocalDate.now())
+            .build();
+        GroupAbsentListRequest requestDto = GroupAbsentListRequest.builder()
+            .absenteeList(List.of(absenteeInfo1, absenteeInfo2))
+            .build();
+
+        given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
+        given(personnelRepository.findById(anyLong())).willReturn(Optional.of(personnel1), Optional.of(personnel2));
+        given(attendanceRepository.saveAll(anyCollection())).willReturn(List.of(attendance1, attendance2));
+
+        //when
+        List<GroupAbsentListResponse> groupAbsentListResponseDto = departmentService.checkGroupAbsentInfo(
+            department.getId(), smallGroup.getId(), requestDto);
+
+        //then
+        assertThat(groupAbsentListResponseDto).hasSize(2)
+            .extracting("id")
+            .containsExactlyInAnyOrder(1l, 2l);
+
     }
 
 }

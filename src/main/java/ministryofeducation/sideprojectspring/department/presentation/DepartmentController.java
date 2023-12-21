@@ -3,13 +3,17 @@ package ministryofeducation.sideprojectspring.department.presentation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.application.DepartmentService;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,6 +50,17 @@ public class DepartmentController {
         @PathVariable("departmentId") Long departmentId,
         @PathVariable("groupId") Long groupId) {
         List<GroupAbsentInfoResponse> responseDto = departmentService.getGroupAbsentInfo(departmentId, groupId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/{departmentId}/{groupId}/absent")
+    public ResponseEntity<List<GroupAbsentListResponse>> checkGroupAbsentInfo(
+        @RequestBody GroupAbsentListRequest requestDto,
+        @PathVariable("departmentId") Long departmentId,
+        @PathVariable("groupId") Long groupId) {
+        List<GroupAbsentListResponse> responseDto = departmentService.checkGroupAbsentInfo(departmentId,
+            groupId, requestDto);
 
         return ResponseEntity.ok(responseDto);
     }

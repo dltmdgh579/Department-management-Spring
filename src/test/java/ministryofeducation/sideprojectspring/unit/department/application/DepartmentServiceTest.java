@@ -14,10 +14,13 @@ import ministryofeducation.sideprojectspring.department.infrastructure.Departmen
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
@@ -207,6 +210,47 @@ class DepartmentServiceTest {
         assertThat(groupAbsentListResponseDto).hasSize(2)
             .extracting("id")
             .containsExactlyInAnyOrder(1l, 2l);
+
+    }
+
+    @Test
+    void 그룹_내_인원을_추가한다() {
+        //given
+        Department department = Department.createDepartment(1l, "department", 20);
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
+        Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
+
+        AddMemberInfo addMemberInfo1 = AddMemberInfo.builder()
+            .id(personnel1.getId())
+            .name(personnel1.getName())
+            .addDate(LocalDate.now())
+            .build();
+        AddMemberInfo addMemberInfo2 = AddMemberInfo.builder()
+            .id(personnel2.getId())
+            .name(personnel2.getName())
+            .addDate(LocalDate.now())
+            .build();
+
+        GroupAddMemberListRequest request = GroupAddMemberListRequest.builder()
+            .addMemberList(List.of(addMemberInfo1, addMemberInfo2))
+            .build();
+
+        given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
+        given(smallGroupRepository.findById(anyLong())).willReturn(Optional.of(smallGroup));
+        given(personnelRepository.findById(anyLong())).willReturn(Optional.of(personnel1), Optional.of(personnel2));
+
+        //when
+        List<GroupAddMemberListResponse> groupAddMemberListResponse = departmentService.addGroupMember(
+            department.getId(), smallGroup.getId(), request);
+
+        //then
+        assertThat(groupAddMemberListResponse).hasSize(2)
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                tuple(1l, "test1"),
+                tuple(2l, "test2")
+            );
 
     }
 

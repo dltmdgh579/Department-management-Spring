@@ -4,10 +4,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.application.DepartmentService;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,6 +62,17 @@ public class DepartmentController {
         @PathVariable("departmentId") Long departmentId,
         @PathVariable("groupId") Long groupId) {
         List<GroupAbsentListResponse> responseDto = departmentService.checkGroupAbsentInfo(departmentId,
+            groupId, requestDto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/{departmentId}/{groupId}/add")
+    public ResponseEntity<List<GroupAddMemberListResponse>> addGroupMember(
+        @RequestBody GroupAddMemberListRequest requestDto,
+        @PathVariable("departmentId") Long departmentId,
+        @PathVariable("groupId") Long groupId) {
+        List<GroupAddMemberListResponse> responseDto = departmentService.addGroupMember(departmentId,
             groupId, requestDto);
 
         return ResponseEntity.ok(responseDto);

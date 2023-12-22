@@ -1,5 +1,6 @@
 package ministryofeducation.sideprojectspring.unit.department.presentation;
 
+import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.testPersonnel;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -7,14 +8,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDate;
 import java.util.List;
+import ministryofeducation.sideprojectspring.department.domain.Department;
+import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -167,6 +174,37 @@ class DepartmentControllerTest extends ControllerTest {
         //when
         ResultActions perform = mockMvc.perform(
             post("/{departmentId}/{groupId}/absent", 1l, 1l)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    void 그룹_내_인원을_추가한다() throws Exception {
+        //given
+        GroupAddMemberListResponse groupAddMemberListResponse1 = GroupAddMemberListResponse.builder()
+            .id(1l)
+            .name("test1")
+            .build();
+        GroupAddMemberListResponse groupAddMemberListResponse2 = GroupAddMemberListResponse.builder()
+            .id(2l)
+            .name("test2")
+            .build();
+
+        GroupAddMemberListRequest request = GroupAddMemberListRequest.builder()
+            .build();
+
+        given(departmentService.addGroupMember(anyLong(), anyLong(), any(GroupAddMemberListRequest.class)))
+            .willReturn(List.of(groupAddMemberListResponse1, groupAddMemberListResponse2));
+
+        //when
+        ResultActions perform = mockMvc.perform(
+            post("/{departmentId}/{groupId}/add", 1l, 1l)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
         );

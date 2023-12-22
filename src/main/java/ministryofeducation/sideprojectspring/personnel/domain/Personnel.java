@@ -92,4 +92,8 @@ public class Personnel extends BaseEntity {
     public void changeName(String name){
         this.name = name;
     }
+
+    public void changeSmallGroup(SmallGroup smallGroup){
+        this.smallGroup = smallGroup;
+    }
 }

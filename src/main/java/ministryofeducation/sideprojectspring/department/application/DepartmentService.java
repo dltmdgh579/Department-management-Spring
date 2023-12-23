@@ -15,12 +15,14 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
@@ -50,6 +52,22 @@ public class DepartmentService {
 
         // responseDto 생성
         return DepartmentInfoResponse.of(smallGroupInfoList, departmentEnrollment, thisWeekAttendance);
+    }
+
+    public GroupAddResponse addGroup(Long departmentId, GroupAddRequest requestDto){
+        Department department = departmentRepository.findById(departmentId)
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        SmallGroup smallGroup = SmallGroup.builder()
+            .name(requestDto.getName())
+            .department(department)
+            .build();
+
+        SmallGroup savedSmallGroup = smallGroupRepository.save(smallGroup);
+        return GroupAddResponse.builder()
+            .id(savedSmallGroup.getId())
+            .name(savedSmallGroup.getName())
+            .build();
     }
 
     private List<SmallGroupInfo> getSmallGroupInfoList(Long departmentId) {

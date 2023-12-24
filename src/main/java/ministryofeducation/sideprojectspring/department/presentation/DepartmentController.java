@@ -5,17 +5,23 @@ import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.application.DepartmentService;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,6 +42,25 @@ public class DepartmentController {
         DepartmentInfoResponse responseDto = departmentService.getDepartmentInfo(departmentId);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/{departmentId}")
+    public ResponseEntity<GroupAddResponse> addGroup(@PathVariable("departmentId") Long departmentId,
+        @RequestBody GroupAddRequest requestDto){
+        GroupAddResponse groupAddResponse = departmentService.addGroup(departmentId, requestDto);
+
+        return ResponseEntity.ok(groupAddResponse);
+    }
+
+    @PostMapping("/{departmentId}/{groupId}/modify")
+    public ResponseEntity<GroupModifyResponse> modifyGroup(
+        @RequestBody GroupModifyRequest requestDto,
+        @PathVariable("departmentId") Long departmentId,
+        @PathVariable("groupId") Long groupId
+    ) {
+        GroupModifyResponse groupModifyResponse = departmentService.modifyGroup(departmentId, groupId, requestDto);
+
+        return ResponseEntity.ok(groupModifyResponse);
     }
 
     @GetMapping("/{departmentId}/{groupId}")

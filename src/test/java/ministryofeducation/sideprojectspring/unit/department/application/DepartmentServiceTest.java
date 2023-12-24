@@ -16,12 +16,16 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
@@ -82,6 +86,45 @@ class DepartmentServiceTest {
                 tuple(1l, "department1"),
                 tuple(2l, "department2")
             );
+    }
+
+    @Test
+    void 부서_내_그룹을_추가한다() {
+        //given
+        Department department = Department.createDepartment(1l, "departmentName", 20);
+        GroupAddRequest groupAddRequest = GroupAddRequest.builder()
+            .name("newGroup")
+            .build();
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "newGroup", null, department);
+
+        given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
+        given(smallGroupRepository.save(any(SmallGroup.class))).willReturn(smallGroup);
+
+        //when
+        GroupAddResponse groupAddResponse = departmentService.addGroup(department.getId(), groupAddRequest);
+
+        //then
+        assertThat(groupAddResponse.getName()).isEqualTo("newGroup");
+    }
+
+    @Test
+    void 부서_내_그룹_이름을_수정한다() {
+        //given
+        Department department = Department.createDepartment(1l, "departmentName", 20);
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "groupName", "leader", department);
+        GroupModifyRequest groupModifyRequest = GroupModifyRequest.builder()
+            .name("modifyGroupName")
+            .build();
+
+        given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
+        given(smallGroupRepository.findById(anyLong())).willReturn(Optional.of(smallGroup));
+
+        //when
+        GroupModifyResponse groupModifyResponse = departmentService.modifyGroup(department.getId(), smallGroup.getId(),
+            groupModifyRequest);
+
+        //then
+        assertThat(groupModifyResponse.getName()).isEqualTo("modifyGroupName");
     }
 
     @Test
@@ -182,7 +225,6 @@ class DepartmentServiceTest {
             personnel1);
         Attendance attendance2 = Attendance.createAttendance(2l, LocalDate.now(), AttendanceCheck.ABSENT, department,
             personnel2);
-
 
         AbsenteeInfo absenteeInfo1 = AbsenteeInfo.builder()
             .id(1l)

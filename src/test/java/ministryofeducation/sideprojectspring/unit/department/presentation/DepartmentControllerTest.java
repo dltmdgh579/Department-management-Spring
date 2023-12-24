@@ -15,6 +15,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
@@ -23,6 +24,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -110,6 +112,29 @@ class DepartmentControllerTest extends ControllerTest {
         perform
             .andExpect(status().isOk())
             .andExpect(jsonPath("name").value("newGroup"));
+    }
+
+    @Test
+    void 부서_내_그룹_이름을_수정한다() throws Exception {
+        //given
+        GroupModifyRequest request = GroupModifyRequest.builder().build();
+        GroupModifyResponse groupModifyResponse = GroupModifyResponse.builder()
+            .id(1l)
+            .name("modifyGroupName")
+            .build();
+
+        given(departmentService.modifyGroup(anyLong(), anyLong(), any(GroupModifyRequest.class)))
+            .willReturn(groupModifyResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/{departmentId}/{groupId}/modify", 1l, 1l)
+            .content(objectMapper.writeValueAsString(request))
+            .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("name").value("modifyGroupName"));
     }
 
     @Test

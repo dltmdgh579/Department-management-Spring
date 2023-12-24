@@ -17,6 +17,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
@@ -24,6 +25,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
@@ -103,6 +105,26 @@ class DepartmentServiceTest {
 
         //then
         assertThat(groupAddResponse.getName()).isEqualTo("newGroup");
+    }
+
+    @Test
+    void 부서_내_그룹_이름을_수정한다() {
+        //given
+        Department department = Department.createDepartment(1l, "departmentName", 20);
+        SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "groupName", "leader", department);
+        GroupModifyRequest groupModifyRequest = GroupModifyRequest.builder()
+            .name("modifyGroupName")
+            .build();
+
+        given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
+        given(smallGroupRepository.findById(anyLong())).willReturn(Optional.of(smallGroup));
+
+        //when
+        GroupModifyResponse groupModifyResponse = departmentService.modifyGroup(department.getId(), smallGroup.getId(),
+            groupModifyRequest);
+
+        //then
+        assertThat(groupModifyResponse.getName()).isEqualTo("modifyGroupName");
     }
 
     @Test

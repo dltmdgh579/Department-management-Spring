@@ -16,6 +16,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
@@ -24,6 +25,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
@@ -67,6 +69,21 @@ public class DepartmentService {
         return GroupAddResponse.builder()
             .id(savedSmallGroup.getId())
             .name(savedSmallGroup.getName())
+            .build();
+    }
+
+    @Transactional
+    public GroupModifyResponse modifyGroup(Long departmentId, Long groupId, GroupModifyRequest requestDto){
+        Department department = departmentRepository.findById(departmentId)
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        SmallGroup smallGroup = smallGroupRepository.findById(groupId)
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        smallGroup.changeName(requestDto.getName());
+        return GroupModifyResponse.builder()
+            .id(groupId)
+            .name(requestDto.getName())
             .build();
     }
 

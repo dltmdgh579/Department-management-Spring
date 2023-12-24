@@ -54,6 +54,10 @@ public class SmallGroup extends BaseEntity {
             .build();
     }
 
+    public void changeName(String name){
+        this.name = name;
+    }
+
 
 
 }

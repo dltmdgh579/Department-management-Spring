@@ -193,17 +193,18 @@ class DepartmentServiceTest {
     @Test
     void 그룹_내_결석인원을_조회한다() {
         //given
+        LocalDate absentDate = LocalDate.of(2023, 12, 26);
         Department department = Department.createDepartment(1l, "department", 20);
         SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
         Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
         Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
 
-        given(personnelRepository.findByAbsentPersonnel(anyLong(), anyLong(), any(AttendanceCheck.class)))
+        given(personnelRepository.findByAbsentPersonnel(anyLong(), anyLong(), any(LocalDate.class)))
             .willReturn(List.of(personnel1, personnel2));
 
         //when
         List<GroupAbsentInfoResponse> groupAbsentInfoResponse = departmentService.getGroupAbsentInfo(department.getId(),
-            smallGroup.getId());
+            smallGroup.getId(), absentDate);
 
         //then
         assertThat(groupAbsentInfoResponse).hasSize(2)

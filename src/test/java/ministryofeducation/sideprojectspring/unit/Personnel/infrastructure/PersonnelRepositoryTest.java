@@ -2,10 +2,12 @@ package ministryofeducation.sideprojectspring.unit.Personnel.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
+import ministryofeducation.sideprojectspring.config.QueryDslConfig;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
@@ -21,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,7 @@ import static ministryofeducation.sideprojectspring.personnel.domain.attendance.
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
+@Import(QueryDslConfig.class)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @ActiveProfiles("test")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -125,6 +129,30 @@ class PersonnelRepositoryTest {
             .extracting("id", "name")
             .containsExactlyInAnyOrder(
                 tuple(1l, "test1"),
+                tuple(3l, "test3")
+            );
+    }
+
+    @Test
+    void 부서_내_모든_인원을_조회한다() {
+        //given
+        Department department = Department.createDepartment(1l, "departmentName", 20);
+        departmentRepository.save(department);
+
+        Personnel personnel1 = testPersonnel(1l, "test1", department, null);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, null);
+        Personnel personnel3 = testPersonnel(3l, "test3", department, null);
+        personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
+
+        //when
+        List<Personnel> personnelList = personnelRepository.findByDepartmentId(department.getId());
+
+        //then
+        assertThat(personnelList).hasSize(3)
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                tuple(1l, "test1"),
+                tuple(2l, "test2"),
                 tuple(3l, "test3")
             );
     }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 import java.time.LocalDate;
@@ -95,5 +96,15 @@ public class Personnel extends BaseEntity {
 
     public void changeSmallGroup(SmallGroup smallGroup){
         this.smallGroup = smallGroup;
+    }
+
+    public void addAttendance(Attendance attendance){
+        this.getAttendanceList().add(attendance);
+    }
+
+    public AttendanceCheck todayAttendance(LocalDate today){
+        Attendance attendance = this.getAttendanceList().get(attendanceList.size() - 1);
+        if(attendance.getAttendanceDate() == today) return attendance.getAttendanceCheck();
+        return null;
     }
 }

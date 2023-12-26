@@ -1,5 +1,7 @@
 package ministryofeducation.sideprojectspring.department.presentation;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.application.DepartmentService;
@@ -17,11 +19,9 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -72,11 +72,13 @@ public class DepartmentController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/{departmentId}/{groupId}/absent")
+    @GetMapping("/{departmentId}/{groupId}/absent/{absentDate}")
     public ResponseEntity<List<GroupAbsentInfoResponse>> groupAbsentInfo(
         @PathVariable("departmentId") Long departmentId,
-        @PathVariable("groupId") Long groupId) {
-        List<GroupAbsentInfoResponse> responseDto = departmentService.getGroupAbsentInfo(departmentId, groupId);
+        @PathVariable("groupId") Long groupId,
+        @PathVariable("absentDate") String absentDate) {
+        List<GroupAbsentInfoResponse> responseDto = departmentService.getGroupAbsentInfo(departmentId, groupId,
+            LocalDate.parse(absentDate, DateTimeFormatter.ISO_DATE));
 
         return ResponseEntity.ok(responseDto);
     }

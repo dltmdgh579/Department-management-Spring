@@ -5,15 +5,11 @@ import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDate;
 import java.util.List;
-import ministryofeducation.sideprojectspring.department.domain.Department;
-import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
-import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
@@ -25,7 +21,6 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
-import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -176,11 +171,11 @@ class DepartmentControllerTest extends ControllerTest {
             .phone("010-0000-0002")
             .build();
 
-        given(departmentService.getGroupAbsentInfo(anyLong(), anyLong()))
+        given(departmentService.getGroupAbsentInfo(anyLong(), anyLong(), any(LocalDate.class)))
             .willReturn(List.of(groupAbsentInfoResponse1, groupAbsentInfoResponse2));
 
         //when
-        ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}/absent", anyLong(), anyLong()));
+        ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}/absent/{absentDate}", 1l, 1l, "2023-12-26"));
 
         //then
         perform

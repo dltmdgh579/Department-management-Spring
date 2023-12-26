@@ -10,6 +10,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
@@ -40,6 +41,16 @@ public class DepartmentController {
     @GetMapping("/{departmentId}")
     public ResponseEntity<DepartmentInfoResponse> departmentInfo(@PathVariable("departmentId") Long departmentId) {
         DepartmentInfoResponse responseDto = departmentService.getDepartmentInfo(departmentId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/{departmentId}/list/{todayDate}")
+    public ResponseEntity<List<DepartmentMemberListResponse>> departmentMemberList(
+        @PathVariable("departmentId") Long departmentId,
+        @PathVariable("todayDate") String todayDate){
+        List<DepartmentMemberListResponse> responseDto = departmentService.getDepartmentMemberList(
+            departmentId, LocalDate.parse(todayDate, DateTimeFormatter.ISO_DATE));
 
         return ResponseEntity.ok(responseDto);
     }

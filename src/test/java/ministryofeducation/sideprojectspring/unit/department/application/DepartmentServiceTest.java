@@ -1,6 +1,8 @@
 package ministryofeducation.sideprojectspring.unit.department.application;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -19,6 +21,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
@@ -29,6 +32,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -222,9 +226,9 @@ class DepartmentServiceTest {
         SmallGroup smallGroup = SmallGroup.createSmallGroup(1l, "smallGroup", "leader", department);
         Personnel personnel1 = testPersonnel(1l, "test1", department, smallGroup);
         Personnel personnel2 = testPersonnel(2l, "test2", department, smallGroup);
-        Attendance attendance1 = Attendance.createAttendance(1l, LocalDate.now(), AttendanceCheck.ABSENT, department,
+        Attendance attendance1 = Attendance.createAttendance(1l, LocalDate.now(), ABSENT, department,
             personnel1);
-        Attendance attendance2 = Attendance.createAttendance(2l, LocalDate.now(), AttendanceCheck.ABSENT, department,
+        Attendance attendance2 = Attendance.createAttendance(2l, LocalDate.now(), ABSENT, department,
             personnel2);
 
         AbsenteeInfo absenteeInfo1 = AbsenteeInfo.builder()
@@ -295,6 +299,40 @@ class DepartmentServiceTest {
                 tuple(2l, "test2")
             );
 
+    }
+
+    @Test
+    void 부서_내_모든_인원을_조회한다() {
+        //given
+        LocalDate today = LocalDate.of(2023, 12, 27);
+
+        Department department = Department.createDepartment(1l, "department", 20);
+        Personnel personnel1 = testPersonnel(1l, "test1", department, null);
+        Personnel personnel2 = testPersonnel(2l, "test2", department, null);
+        Personnel personnel3 = testPersonnel(3l, "test3", department, null);
+        Attendance attendance1 = Attendance.createAttendance(1l, today, ABSENT, department, personnel1);
+        Attendance attendance2 = Attendance.createAttendance(2l, today, ATTENDANCE, department, personnel2);
+        Attendance attendance3 = Attendance.createAttendance(3l, today.minusWeeks(1), ATTENDANCE, department, personnel3);
+
+        personnel1.addAttendance(attendance1);
+        personnel2.addAttendance(attendance2);
+        personnel3.addAttendance(attendance3);
+
+        given(personnelRepository.findByDepartmentId(anyLong()))
+            .willReturn(List.of(personnel1, personnel2, personnel3));
+
+        //when
+        List<DepartmentMemberListResponse> departmentMemberList = departmentService.getDepartmentMemberList(
+            department.getId(), today);
+
+        //then
+        assertThat(departmentMemberList).hasSize(3)
+            .extracting("name", "attendanceCheck")
+            .containsExactlyInAnyOrder(
+                tuple("test1", ABSENT),
+                tuple("test2", ATTENDANCE),
+                tuple("test3", null)
+            );
     }
 
 }

@@ -1,11 +1,14 @@
 package ministryofeducation.sideprojectspring.unit.department.presentation;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.testPersonnel;
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
@@ -14,6 +17,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
@@ -21,6 +25,8 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -251,6 +257,37 @@ class DepartmentControllerTest extends ControllerTest {
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
         );
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    void 부서_내_모든_인원을_조회한다() throws Exception {
+        //given
+        LocalDate today = LocalDate.of(2023, 12, 27);
+
+        DepartmentMemberListResponse departmentMemberListResponse1 = DepartmentMemberListResponse.builder()
+            .id(1l)
+            .name("test1")
+            .departmentType(JOSHUA)
+            .attendanceCheck(ABSENT)
+            .build();
+        DepartmentMemberListResponse departmentMemberListResponse2 = DepartmentMemberListResponse.builder()
+            .id(2l)
+            .name("test2")
+            .departmentType(JOSHUA)
+            .attendanceCheck(ABSENT)
+            .build();
+
+        given(departmentService.getDepartmentMemberList(anyLong(), any(LocalDate.class)))
+            .willReturn(List.of(departmentMemberListResponse1, departmentMemberListResponse2));
+
+        //when
+        ResultActions perform = mockMvc.perform(
+            get("/{departmentId}/list/{todayDate}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
         //then
         perform

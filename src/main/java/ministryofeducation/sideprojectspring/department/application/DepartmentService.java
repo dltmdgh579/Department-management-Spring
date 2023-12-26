@@ -18,6 +18,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.request
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentNameResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAbsentListResponse;
@@ -53,6 +54,15 @@ public class DepartmentService {
 
         // responseDto 생성
         return DepartmentInfoResponse.of(smallGroupInfoList, departmentEnrollment, thisWeekAttendance);
+    }
+
+    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate todayDate){
+        List<Personnel> personnelList = personnelRepository.findByDepartmentId(departmentId);
+
+        return personnelList.stream()
+            .map(personnel -> DepartmentMemberListResponse.of(personnel, todayDate))
+            .collect(Collectors.toList());
+
     }
 
     public GroupAddResponse addGroup(Long departmentId, GroupAddRequest requestDto){
@@ -136,12 +146,15 @@ public class DepartmentService {
         Personnel personnel = personnelRepository.findById(absenteeInfo.getId())
             .orElseThrow(() -> new IllegalArgumentException());
 
-        return Attendance.builder()
+        Attendance attendance = Attendance.builder()
             .attendanceDate(absenteeInfo.getAbsentDate())
             .attendanceCheck(ABSENT)
             .department(department)
             .personnel(personnel)
             .build();
+
+        personnel.addAttendance(attendance);
+        return attendance;
     }
     @Transactional
     public List<GroupAddMemberListResponse> addGroupMember(Long departmentId, Long groupId,

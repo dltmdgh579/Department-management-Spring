@@ -100,6 +100,8 @@ class PersonnelRepositoryTest {
     @Test
     void 그룹_내_결석인원을_조회한다() {
         //given
+        LocalDate absentDate = LocalDate.of(2023, 12, 26);
+
         Department department = Department.createDepartment(1l, "department", 20);
         departmentRepository.save(department);
 
@@ -111,12 +113,12 @@ class PersonnelRepositoryTest {
         Personnel personnel3 = testPersonnel(3l, "test3", department, smallGroup);
         personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
 
-        Attendance attendance1 = createAttendance(1l, LocalDate.now(), ABSENT, department, personnel1);
-        Attendance attendance2 = createAttendance(2l, LocalDate.now(), ABSENT, department, personnel3);
+        Attendance attendance1 = createAttendance(1l, absentDate, ABSENT, department, personnel1);
+        Attendance attendance2 = createAttendance(2l, absentDate, ABSENT, department, personnel3);
         attendanceRepository.saveAll(List.of(attendance1, attendance2));
 
         //when
-        List<Personnel> groupAbsentInfoResponse = personnelRepository.findByAbsentPersonnel(department.getId(), smallGroup.getId(), ABSENT);
+        List<Personnel> groupAbsentInfoResponse = personnelRepository.findByAbsentPersonnel(department.getId(), smallGroup.getId(), absentDate);
 
         //then
         assertThat(groupAbsentInfoResponse).hasSize(2)

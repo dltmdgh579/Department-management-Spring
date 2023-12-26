@@ -4,7 +4,6 @@ import static ministryofeducation.sideprojectspring.personnel.domain.attendance.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.domain.Department;
@@ -109,8 +108,8 @@ public class DepartmentService {
             .collect(Collectors.toList());
     }
 
-    public List<GroupAbsentInfoResponse> getGroupAbsentInfo(Long departmentId, Long groupId) {
-        return personnelRepository.findByAbsentPersonnel(departmentId, groupId, ABSENT).stream()
+    public List<GroupAbsentInfoResponse> getGroupAbsentInfo(Long departmentId, Long groupId, LocalDate absentDate) {
+        return personnelRepository.findByAbsentPersonnel(departmentId, groupId, absentDate).stream()
             .map(GroupAbsentInfoResponse::of)
             .collect(Collectors.toList());
     }
@@ -144,7 +143,6 @@ public class DepartmentService {
             .personnel(personnel)
             .build();
     }
-
     @Transactional
     public List<GroupAddMemberListResponse> addGroupMember(Long departmentId, Long groupId,
         GroupAddMemberListRequest requestDto) {

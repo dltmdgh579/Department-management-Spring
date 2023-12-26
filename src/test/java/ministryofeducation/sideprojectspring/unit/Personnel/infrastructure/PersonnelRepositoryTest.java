@@ -2,28 +2,19 @@ package ministryofeducation.sideprojectspring.unit.Personnel.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
-import ministryofeducation.sideprojectspring.config.QueryDslConfig;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
-import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
-import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +25,6 @@ import static ministryofeducation.sideprojectspring.personnel.domain.attendance.
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
-@Import(QueryDslConfig.class)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @ActiveProfiles("test")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)

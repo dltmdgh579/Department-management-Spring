@@ -52,7 +52,7 @@ class DepartmentControllerTest extends ControllerTest {
         given(departmentService.getAllDepartment()).willReturn(List.of(department1, department2));
 
         //when
-        ResultActions perform = mockMvc.perform(get("/"));
+        ResultActions perform = mockMvc.perform(get("/api"));
 
         //then
         perform
@@ -85,7 +85,7 @@ class DepartmentControllerTest extends ControllerTest {
         given(departmentService.getDepartmentInfo(anyLong())).willReturn(departmentInfoResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/{departmentId}", 1l));
+        ResultActions perform = mockMvc.perform(get("/api/{departmentId}", 1l));
 
         //then
         perform
@@ -105,7 +105,7 @@ class DepartmentControllerTest extends ControllerTest {
         given(departmentService.addGroup(anyLong(), any(GroupAddRequest.class))).willReturn(groupAddResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/{departmentId}", 1l)
+        ResultActions perform = mockMvc.perform(post("/api/{departmentId}", 1l)
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON));
 
@@ -128,7 +128,7 @@ class DepartmentControllerTest extends ControllerTest {
             .willReturn(groupModifyResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/{departmentId}/{groupId}/modify", 1l, 1l)
+        ResultActions perform = mockMvc.perform(post("/api/{departmentId}/{groupId}/modify", 1l, 1l)
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON));
 
@@ -157,7 +157,7 @@ class DepartmentControllerTest extends ControllerTest {
             List.of(groupInfoResponse1, groupInfoResponse2));
 
         //when
-        ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}", anyLong(), anyLong()));
+        ResultActions perform = mockMvc.perform(get("/api/{departmentId}/{groupId}", anyLong(), anyLong()));
 
         //then
         perform
@@ -181,7 +181,7 @@ class DepartmentControllerTest extends ControllerTest {
             .willReturn(List.of(groupAbsentInfoResponse1, groupAbsentInfoResponse2));
 
         //when
-        ResultActions perform = mockMvc.perform(get("/{departmentId}/{groupId}/absent/{absentDate}", 1l, 1l, "2023-12-26"));
+        ResultActions perform = mockMvc.perform(get("/api/{departmentId}/{groupId}/absent/{absentDate}", 1l, 1l, "2023-12-26"));
 
         //then
         perform
@@ -222,7 +222,7 @@ class DepartmentControllerTest extends ControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(
-            post("/{departmentId}/{groupId}/absent", 1l, 1l)
+            post("/api/{departmentId}/{groupId}/absent", 1l, 1l)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -253,7 +253,7 @@ class DepartmentControllerTest extends ControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(
-            post("/{departmentId}/{groupId}/add", 1l, 1l)
+            post("/api/{departmentId}/{groupId}/add", 1l, 1l)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -287,7 +287,7 @@ class DepartmentControllerTest extends ControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(
-            get("/{departmentId}/list/{todayDate}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            get("/api/{departmentId}/list/{todayDate}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
         //then
         perform

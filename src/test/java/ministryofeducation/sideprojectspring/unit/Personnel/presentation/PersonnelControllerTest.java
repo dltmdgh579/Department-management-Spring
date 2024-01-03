@@ -38,7 +38,7 @@ class PersonnelControllerTest extends ControllerTest {
         String response = objectMapper.writeValueAsString(personnelListResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/list"));
+        ResultActions perform = mockMvc.perform(get("/api/list"));
 
         //then
         perform
@@ -54,7 +54,7 @@ class PersonnelControllerTest extends ControllerTest {
         given(personnelService.personnelDetail(anyLong())).willReturn(response);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/detail/{personnelId}", 1l));
+        ResultActions resultActions = mockMvc.perform(get("/api/detail/{personnelId}", 1l));
 
         //then
         resultActions
@@ -84,7 +84,7 @@ class PersonnelControllerTest extends ControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(
-            post("/personnel/post")
+            post("/api/personnel/post")
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
         );

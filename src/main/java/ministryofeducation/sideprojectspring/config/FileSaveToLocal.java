@@ -17,17 +17,17 @@ public class FileSaveToLocal {
 
         String dir = "/var/images/personnel/";
         String path = name + "_" + uuid;
-        String savedPath = dir + path;
 
         String contentType = multipartFile.getContentType();
         if(ObjectUtils.isEmpty(contentType)) throw new IllegalArgumentException("파일 확장명이 올바르지 않습니다.");
 
         if(contentType.contains("image/jpeg"))
-            savedPath += ".jpg";
+            path += ".jpg";
         else if(contentType.contains("image/png"))
-            savedPath += ".png";
+            path += ".png";
         else throw new IllegalArgumentException("지원하지 않는 확장자입니다.");
 
+        String savedPath = dir + path;
         File file = new File(savedPath);
         if(!file.exists()) file.mkdirs();
 

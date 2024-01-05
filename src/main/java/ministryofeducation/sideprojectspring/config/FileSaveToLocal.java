@@ -15,7 +15,7 @@ public class FileSaveToLocal {
     public String saveProfileImageFile(String name, MultipartFile multipartFile) throws IOException {
         if(multipartFile.isEmpty()) return null;
 
-        String dir = "/var/images/personnel/";
+        String dir = "/images/personnel/";
         String path = name + "_" + uuid;
 
         String contentType = multipartFile.getContentType();

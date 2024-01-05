@@ -5,10 +5,14 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
 import java.util.Optional;
+import ministryofeducation.sideprojectspring.config.FileSaveToLocal;
 import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
@@ -25,6 +29,7 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -37,6 +42,9 @@ class PersonnelServiceTest {
 
     @InjectMocks
     private PersonnelService personnelService;
+
+    @Mock
+    private FileSaveToLocal fileSaveToLocal;
 
     @Test
     public void 전체_인원을_조회한다() {
@@ -79,7 +87,7 @@ class PersonnelServiceTest {
     }
 
     @Test
-    void 새로운_인원을_추가한다() {
+    void 새로운_인원을_추가한다() throws IOException {
         //given
         PersonnelPostRequest personnelPostRequest = PersonnelPostRequest.builder()
             .name("test")
@@ -93,10 +101,14 @@ class PersonnelServiceTest {
 
         Personnel personnel = testPersonnel(1l, "test", "test@email.com", "010-0000-0000");
 
+        MockMultipartFile profileImage = new MockMultipartFile("profileImage", "test.jpg", "image/jpeg",
+            "jpeg data".getBytes());
+
         given(personnelRepository.save(any(Personnel.class))).willReturn(personnel);
+        given(fileSaveToLocal.saveProfileImageFile(anyString(), any())).willReturn("test_1234");
 
         //when
-        PersonnelPostResponse personnelPostResponse = personnelService.personnelPost(personnelPostRequest);
+        PersonnelPostResponse personnelPostResponse = personnelService.personnelPost(personnelPostRequest, profileImage);
 
         //then
         assertThat(personnelPostResponse.getName()).isEqualTo("test");

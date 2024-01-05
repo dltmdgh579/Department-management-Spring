@@ -20,6 +20,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 public class Personnel extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,7 +58,8 @@ public class Personnel extends BaseEntity {
 
     @Builder
     private Personnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
-                     String workSpace, String address, String profileImage, DepartmentType departmentType, Department department, SmallGroup smallGroup) {
+        String workSpace, String address, String profileImage, DepartmentType departmentType, Department department,
+        SmallGroup smallGroup) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -72,8 +74,10 @@ public class Personnel extends BaseEntity {
         this.smallGroup = smallGroup;
     }
 
-    public static Personnel createPersonnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
-        String workSpace, String address, String profileImage, DepartmentType departmentType, Department department, SmallGroup smallGroup) {
+    public static Personnel createPersonnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline,
+        String email,
+        String workSpace, String address, String profileImage, DepartmentType departmentType, Department department,
+        SmallGroup smallGroup) {
         return Personnel.builder()
             .id(id)
             .name(name)
@@ -90,21 +94,27 @@ public class Personnel extends BaseEntity {
             .build();
     }
 
-    public void changeName(String name){
+    public void changeName(String name) {
         this.name = name;
     }
 
-    public void changeSmallGroup(SmallGroup smallGroup){
+    public void changeSmallGroup(SmallGroup smallGroup) {
         this.smallGroup = smallGroup;
     }
 
-    public void addAttendance(Attendance attendance){
+    public void changeProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void addAttendance(Attendance attendance) {
         this.getAttendanceList().add(attendance);
     }
 
-    public AttendanceCheck todayAttendance(LocalDate today){
+    public AttendanceCheck todayAttendance(LocalDate today) {
         Attendance attendance = this.getAttendanceList().get(attendanceList.size() - 1);
-        if(attendance.getAttendanceDate() == today) return attendance.getAttendanceCheck();
+        if (attendance.getAttendanceDate() == today) {
+            return attendance.getAttendanceCheck();
+        }
         return null;
     }
 }

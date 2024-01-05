@@ -74,4 +74,4 @@ jobs:
           sudo docker rm dnch-edu-service
           sudo docker rmi -f ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0
-          sudo docker run --network dnch-network -p 8080:8080 -e "spring.datasource.url=jdbc:mysql://mysql:3306/ministry_of_education?characterEncoding=UTF-8&serverTimezone=Asia/Seoul" -d -v /var/images/personnel:/var/images/personnel --name dnch-edu-service ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0
+          sudo docker run --network dnch-network -p 8080:8080 -e "spring.datasource.url=jdbc:mysql://mysql:3306/ministry_of_education?characterEncoding=UTF-8&serverTimezone=Asia/Seoul" -d -v /var/images/personnel:/images/personnel --name dnch-edu-service ${{ secrets.DOCKER_USERNAME }}/dnch-edu-service:1.0

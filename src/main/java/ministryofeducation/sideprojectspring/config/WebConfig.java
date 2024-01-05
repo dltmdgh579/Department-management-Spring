@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private String resourcePath = "/images/personnel/";
+    private String resourcePath = "file:////images/personnel/";
     private String uploadPath = "/profile-image/**";
 
     @Override

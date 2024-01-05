@@ -1,5 +1,6 @@
 package ministryofeducation.sideprojectspring.personnel.presentation;
 
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api")
@@ -37,8 +40,10 @@ public class PersonnelController {
     }
 
     @PostMapping("/personnel/post")
-    public ResponseEntity<PersonnelPostResponse> personnelPost(@RequestBody PersonnelPostRequest requestDto){
-        PersonnelPostResponse responseDto = personnelService.personnelPost(requestDto);
+    public ResponseEntity<PersonnelPostResponse> personnelPost(
+        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+        @RequestPart(value = "requestDto") PersonnelPostRequest requestDto) throws IOException {
+        PersonnelPostResponse responseDto = personnelService.personnelPost(requestDto, profileImage);
 
         return ResponseEntity.ok(responseDto);
     }

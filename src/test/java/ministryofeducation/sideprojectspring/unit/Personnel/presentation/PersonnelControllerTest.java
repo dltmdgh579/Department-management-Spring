@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
@@ -19,6 +20,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.ResultActions;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -38,7 +41,8 @@ class PersonnelControllerTest extends ControllerTest {
         String response = objectMapper.writeValueAsString(personnelListResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/api/list"));
+        ResultActions perform = mockMvc.perform(get("/api"
+            + "/list"));
 
         //then
         perform
@@ -80,13 +84,18 @@ class PersonnelControllerTest extends ControllerTest {
             .phone("010-0000-0000")
             .build();
 
-        given(personnelService.personnelPost(any())).willReturn(response);
+        MockMultipartFile profileImage = new MockMultipartFile("profileImage", "test.jpg", "image/jpeg",
+            "test file".getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile requestDto = new MockMultipartFile("requestDto", null, "application/json",
+            objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8));
+
+        given(personnelService.personnelPost(any(), any())).willReturn(response);
 
         //when
         ResultActions perform = mockMvc.perform(
-            post("/api/personnel/post")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
+            multipart("/api/personnel/post")
+                .file(profileImage)
+                .file(requestDto)
         );
 
         //then

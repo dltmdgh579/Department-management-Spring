@@ -2,10 +2,12 @@ package ministryofeducation.sideprojectspring.personnel.application;
 
 import static ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import ministryofeducation.sideprojectspring.config.FileSaveToLocal;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
@@ -13,12 +15,15 @@ import ministryofeducation.sideprojectspring.personnel.presentation.dto.response
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelPostResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class PersonnelService {
 
     private final PersonnelRepository personnelRepository;
+    private final FileSaveToLocal fileSaveToLocal;
 
     public List<PersonnelListResponse> personnelList() {
         List<PersonnelListResponse> personnelListResponse = personnelRepository.findAll().stream()
@@ -34,7 +39,9 @@ public class PersonnelService {
         return PersonnelDetailResponse.of(personnel);
     }
 
-    public PersonnelPostResponse personnelPost(PersonnelPostRequest personnelPostRequest) {
+    @Transactional
+    public PersonnelPostResponse personnelPost(PersonnelPostRequest personnelPostRequest, MultipartFile file) throws IOException {
+
         Personnel personnel = Personnel.builder()
             .name(personnelPostRequest.getName())
             .departmentType(personnelPostRequest.getDepartmentType())
@@ -46,7 +53,13 @@ public class PersonnelService {
             .build();
 
         Personnel savedPersonnel = personnelRepository.save(personnel);
-        
+
+        String name = savedPersonnel.getName();
+
+        String path = fileSaveToLocal.saveProfileImageFile(name, file);
+
+        personnel.changeProfileImage(path);
+
         return PersonnelPostResponse.of(savedPersonnel);
     }
 

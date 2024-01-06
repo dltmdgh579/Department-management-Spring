@@ -114,7 +114,7 @@ class PersonnelServiceTest {
             "jpeg data".getBytes());
 
         given(personnelRepository.save(any(Personnel.class))).willReturn(personnel);
-        given(departmentRepository.findByName(any(DepartmentType.class))).willReturn(Optional.of(department));
+        given(departmentRepository.findByName(anyString())).willReturn(Optional.of(department));
         given(fileSaveToLocal.saveProfileImageFile(anyString(), any())).willReturn("test_1234");
 
         //when

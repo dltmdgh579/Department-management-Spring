@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.config.FileSaveToLocal;
+import ministryofeducation.sideprojectspring.department.domain.Department;
+import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PersonnelService {
 
     private final PersonnelRepository personnelRepository;
+    private final DepartmentRepository departmentRepository;
     private final FileSaveToLocal fileSaveToLocal;
 
     public List<PersonnelListResponse> personnelList() {
@@ -55,10 +58,12 @@ public class PersonnelService {
         Personnel savedPersonnel = personnelRepository.save(personnel);
 
         String name = savedPersonnel.getName();
-
         String path = fileSaveToLocal.saveProfileImageFile(name, file);
-
         personnel.changeProfileImage(path);
+
+        Department department = departmentRepository.findByDepartmentType(personnelPostRequest.getDepartmentType())
+            .orElseThrow(() -> new IllegalArgumentException());
+        department.increaseEnrollment();
 
         return PersonnelPostResponse.of(savedPersonnel);
     }

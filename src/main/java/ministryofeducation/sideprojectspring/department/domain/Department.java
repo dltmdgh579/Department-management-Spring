@@ -39,4 +39,8 @@ public class Department extends BaseEntity {
             .build();
     }
 
+    public void increaseEnrollment(){
+        this.enrollment += 1;
+    }
+
 }

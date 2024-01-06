@@ -13,6 +13,8 @@ import java.util.List;
 
 import java.util.Optional;
 import ministryofeducation.sideprojectspring.config.FileSaveToLocal;
+import ministryofeducation.sideprojectspring.department.domain.Department;
+import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
@@ -45,6 +47,9 @@ class PersonnelServiceTest {
 
     @Mock
     private FileSaveToLocal fileSaveToLocal;
+
+    @Mock
+    private DepartmentRepository departmentRepository;
 
     @Test
     public void 전체_인원을_조회한다() {
@@ -99,12 +104,17 @@ class PersonnelServiceTest {
             .address("인천광역시 서구 신현동")
             .build();
 
+        Department department = Department.builder()
+            .name("JOSHUA")
+            .enrollment(10)
+            .build();
         Personnel personnel = testPersonnel(1l, "test", "test@email.com", "010-0000-0000");
 
         MockMultipartFile profileImage = new MockMultipartFile("profileImage", "test.jpg", "image/jpeg",
             "jpeg data".getBytes());
 
         given(personnelRepository.save(any(Personnel.class))).willReturn(personnel);
+        given(departmentRepository.findByName(any(DepartmentType.class))).willReturn(Optional.of(department));
         given(fileSaveToLocal.saveProfileImageFile(anyString(), any())).willReturn("test_1234");
 
         //when
@@ -113,6 +123,7 @@ class PersonnelServiceTest {
         //then
         assertThat(personnelPostResponse.getName()).isEqualTo("test");
         assertThat(personnelPostResponse.getPhone()).isEqualTo("010-0000-0000");
+        assertThat(department.getEnrollment()).isEqualTo(11);
 
     }
 }

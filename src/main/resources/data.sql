@@ -1,8 +1,8 @@
 -- 부서
-insert into department(name, enrollment) values('kindergarten', 11);
-insert into department(name, enrollment) values('holykids', 12);
-insert into department(name, enrollment) values('paulcommunity', 13);
-insert into department(name, enrollment) values('joshua', 14);
+insert into department(name) values('KINDERGARTEN');
+insert into department(name) values('HOLYKIDS');
+insert into department(name) values('PAULCOMMUNITY');
+insert into department(name, enrollment) values('JOSHUA', 3);
 
 -- 소그룹
 insert into small_group(name, leader, department_id) values('소그룹 이름1', '리더1', 4);

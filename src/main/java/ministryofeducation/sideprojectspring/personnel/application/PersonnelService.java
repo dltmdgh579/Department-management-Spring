@@ -61,7 +61,7 @@ public class PersonnelService {
         String path = fileSaveToLocal.saveProfileImageFile(name, file);
         personnel.changeProfileImage(path);
 
-        Department department = departmentRepository.findByDepartmentType(personnelPostRequest.getDepartmentType())
+        Department department = departmentRepository.findByName(personnelPostRequest.getDepartmentType())
             .orElseThrow(() -> new IllegalArgumentException());
         department.increaseEnrollment();
 

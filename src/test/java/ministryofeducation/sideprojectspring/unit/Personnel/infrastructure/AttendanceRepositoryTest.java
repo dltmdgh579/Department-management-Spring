@@ -20,8 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @ActiveProfiles("test")
 class AttendanceRepositoryTest {
 
@@ -91,8 +94,8 @@ class AttendanceRepositoryTest {
         departmentRepository.save(department);
 
         Attendance attendance1 = Attendance.createAttendance(1l, testDate, ATTENDANCE, department, personnel1);
-        Attendance attendance2 = Attendance.createAttendance(1l, testDate, ATTENDANCE, department, personnel2);
-        Attendance attendance3 = Attendance.createAttendance(1l, testDate, ABSENT, department, personnel3);
+        Attendance attendance2 = Attendance.createAttendance(2l, testDate, ATTENDANCE, department, personnel2);
+        Attendance attendance3 = Attendance.createAttendance(3l, testDate, ABSENT, department, personnel3);
         attendanceRepository.saveAll(List.of(attendance1, attendance2, attendance3));
 
         //when

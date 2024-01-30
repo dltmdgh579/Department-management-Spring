@@ -43,7 +43,7 @@ public class DepartmentService {
     private final PersonnelRepository personnelRepository;
 
     public DepartmentInfoResponse getDepartmentInfo(Long departmentId) {
-        Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndDepartmentId(LocalDate.now(),
+        Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndAttendanceCheckAndDepartmentId(LocalDate.now(), ATTENDANCE,
             departmentId).intValue();
         Integer departmentEnrollment = departmentRepository.findById(departmentId)
             .map(Department::getEnrollment)

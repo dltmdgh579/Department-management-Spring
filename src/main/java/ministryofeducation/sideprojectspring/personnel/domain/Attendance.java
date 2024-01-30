@@ -40,9 +40,8 @@ public class Attendance extends BaseEntity {
     private Personnel personnel;
 
     @Builder
-    private Attendance(Long id, LocalDate attendanceDate, AttendanceCheck attendanceCheck, Department department,
+    private Attendance(LocalDate attendanceDate, AttendanceCheck attendanceCheck, Department department,
         Personnel personnel) {
-        this.id = id;
         this.attendanceDate = attendanceDate;
         this.attendanceCheck = attendanceCheck;
         this.department = department;
@@ -52,11 +51,19 @@ public class Attendance extends BaseEntity {
     public static Attendance createAttendance(Long id, LocalDate attendanceDate, AttendanceCheck attendanceCheck, Department department,
         Personnel personnel) {
         return Attendance.builder()
-            .id(id)
             .attendanceDate(attendanceDate)
             .attendanceCheck(attendanceCheck)
             .department(department)
             .personnel(personnel)
             .build();
     }
+
+    public void changeAttendanceCheck(AttendanceCheck attendanceCheck){
+        this.attendanceCheck = attendanceCheck;
+    }
+
+    public void addPersonnel(Personnel personnel){
+        this.personnel = personnel;
+    }
+
 }

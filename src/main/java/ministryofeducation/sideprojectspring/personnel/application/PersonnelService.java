@@ -44,6 +44,8 @@ public class PersonnelService {
 
     @Transactional
     public PersonnelPostResponse personnelPost(PersonnelPostRequest personnelPostRequest, MultipartFile file) throws IOException {
+        Department department = departmentRepository.findByName(personnelPostRequest.getDepartmentType().name())
+            .orElseThrow(() -> new IllegalArgumentException());
 
         Personnel personnel = Personnel.builder()
             .name(personnelPostRequest.getName())
@@ -53,6 +55,7 @@ public class PersonnelService {
             .email(personnelPostRequest.getEmail())
             .workSpace(personnelPostRequest.getWorkSpace())
             .address(personnelPostRequest.getAddress())
+            .department(department)
             .build();
 
         Personnel savedPersonnel = personnelRepository.save(personnel);
@@ -61,8 +64,6 @@ public class PersonnelService {
         String path = fileSaveToLocal.saveProfileImageFile(name, file);
         personnel.changeProfileImage(path);
 
-        Department department = departmentRepository.findByName(personnelPostRequest.getDepartmentType().name())
-            .orElseThrow(() -> new IllegalArgumentException());
         department.increaseEnrollment();
 
         return PersonnelPostResponse.of(savedPersonnel);

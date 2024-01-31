@@ -112,7 +112,8 @@ public class Personnel extends BaseEntity {
     }
 
     public AttendanceCheck todayAttendance(LocalDate today) {
-        Attendance attendance = this.getAttendanceList().get(attendanceList.size() - 1);
+        if(this.attendanceList.isEmpty()) return null;
+        Attendance attendance = this.attendanceList.get(attendanceList.size() - 1);
         if (attendance.getAttendanceDate() == today) {
             return attendance.getAttendanceCheck();
         }

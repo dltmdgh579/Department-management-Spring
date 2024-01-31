@@ -151,7 +151,8 @@ class DepartmentServiceTest {
             .department(department)
             .build();
 
-        given(attendanceRepository.countByAttendanceDateAndDepartmentId(any(LocalDate.class), anyLong()))
+        given(attendanceRepository.countByAttendanceDateAndAttendanceCheckAndDepartmentId(any(LocalDate.class), any(
+            AttendanceCheck.class), anyLong()))
             .willReturn(10l);
         given(departmentRepository.findById(anyLong()))
             .willReturn(Optional.of(department));

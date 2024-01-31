@@ -17,7 +17,8 @@ Infra
 - Nginx, Docker, AWS EC2, Github-Actions
 
 ## ✔ Architecture
-![architecture](https://github.com/dltmdgh579/side-project-spring/assets/68692871/e5125121-3c83-4c37-803b-ceb6d41223ab)
+![architecture](https://github.com/dltmdgh579/Department-management-Spring/assets/68692871/43fd46c8-b5c7-434c-9ae2-dc34bb097ae1)
+
 
 ## ✔ CI/CD
 ![cicd](https://github.com/dltmdgh579/side-project-spring/assets/68692871/baa34dc7-6657-4b4f-9857-3bb2451c50a3)

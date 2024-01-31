@@ -360,7 +360,7 @@ class DepartmentServiceTest {
             .build();
 
         DepartmentAttendanceMemberListRequest request = DepartmentAttendanceMemberListRequest.builder()
-            .absentMemberList(List.of(requestMemberInfo1, requestMemberInfo2))
+            .attendanceMemberList(List.of(requestMemberInfo1, requestMemberInfo2))
             .build();
 
         given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
@@ -373,8 +373,8 @@ class DepartmentServiceTest {
 
         //then
         assertThat(response).hasSize(2);
-        assertThat(personnel1.getAttendanceList().get(0).getAttendanceCheck()).isEqualTo(ABSENT);
-        assertThat(personnel2.getAttendanceList().get(0).getAttendanceCheck()).isEqualTo(ABSENT);
+        assertThat(personnel1.getAttendanceList().get(0).getAttendanceCheck()).isEqualTo(ATTENDANCE);
+        assertThat(personnel2.getAttendanceList().get(0).getAttendanceCheck()).isEqualTo(ATTENDANCE);
 
     }
 

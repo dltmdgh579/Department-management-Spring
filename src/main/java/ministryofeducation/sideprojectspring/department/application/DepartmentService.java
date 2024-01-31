@@ -191,7 +191,7 @@ public class DepartmentService {
     @Transactional
     public List<DepartmentAttendanceMemberListResponse> attendanceDepartmentMember(Long departmentId,
         DepartmentAttendanceMemberListRequest requestDto) {
-        List<AttendanceMemberInfo> memberList = requestDto.getAbsentMemberList();
+        List<AttendanceMemberInfo> memberList = requestDto.getAttendanceMemberList();
 
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new IllegalArgumentException());
@@ -211,7 +211,7 @@ public class DepartmentService {
 
         Attendance attendance = Attendance.builder()
             .attendanceDate(member.getAttendanceDate())
-            .attendanceCheck(ABSENT)
+            .attendanceCheck(ATTENDANCE)
             .department(department)
             .personnel(personnel)
             .build();
@@ -220,7 +220,7 @@ public class DepartmentService {
                 personnel.getId()).orElse(attendance);
 
         if (recentAttendance.getAttendanceDate() == attendance.getAttendanceDate() && !personnel.getAttendanceList().isEmpty()) {
-            recentAttendance.changeAttendanceCheck(ABSENT);
+            recentAttendance.changeAttendanceCheck(ATTENDANCE);
         } else {
             attendanceRepository.save(attendance);
             personnel.addAttendance(attendance);

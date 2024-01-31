@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DepartmentAttendanceMemberListRequest {
 
-    private List<AttendanceMemberInfo> absentMemberList;
+    private List<AttendanceMemberInfo> attendanceMemberList;
 
     @Builder
-    public DepartmentAttendanceMemberListRequest(List<AttendanceMemberInfo> absentMemberList) {
-        this.absentMemberList = absentMemberList;
+    public DepartmentAttendanceMemberListRequest(List<AttendanceMemberInfo> attendanceMemberList) {
+        this.attendanceMemberList = attendanceMemberList;
     }
 
     @Getter

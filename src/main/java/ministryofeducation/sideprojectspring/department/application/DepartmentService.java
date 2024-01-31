@@ -10,12 +10,15 @@ import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.DepartmentAttendanceMemberListRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.DepartmentAttendanceMemberListRequest.AttendanceMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest.AddMemberInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentAttendanceMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
@@ -56,7 +59,7 @@ public class DepartmentService {
         return DepartmentInfoResponse.of(smallGroupInfoList, departmentEnrollment, thisWeekAttendance);
     }
 
-    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate todayDate){
+    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate todayDate) {
         List<Personnel> personnelList = personnelRepository.findByDepartmentId(departmentId);
 
         return personnelList.stream()
@@ -65,7 +68,7 @@ public class DepartmentService {
 
     }
 
-    public GroupAddResponse addGroup(Long departmentId, GroupAddRequest requestDto){
+    public GroupAddResponse addGroup(Long departmentId, GroupAddRequest requestDto) {
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new IllegalArgumentException());
 
@@ -82,7 +85,7 @@ public class DepartmentService {
     }
 
     @Transactional
-    public GroupModifyResponse modifyGroup(Long departmentId, Long groupId, GroupModifyRequest requestDto){
+    public GroupModifyResponse modifyGroup(Long departmentId, Long groupId, GroupModifyRequest requestDto) {
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new IllegalArgumentException());
 
@@ -156,6 +159,7 @@ public class DepartmentService {
         personnel.addAttendance(attendance);
         return attendance;
     }
+
     @Transactional
     public List<GroupAddMemberListResponse> addGroupMember(Long departmentId, Long groupId,
         GroupAddMemberListRequest requestDto) {
@@ -180,6 +184,47 @@ public class DepartmentService {
         Personnel personnel = personnelRepository.findById(member.getId())
             .orElseThrow(() -> new IllegalArgumentException());
         personnel.changeSmallGroup(smallGroup);
+
+        return personnel;
+    }
+
+    @Transactional
+    public List<DepartmentAttendanceMemberListResponse> attendanceDepartmentMember(Long departmentId,
+        DepartmentAttendanceMemberListRequest requestDto) {
+        List<AttendanceMemberInfo> memberList = requestDto.getAbsentMemberList();
+
+        Department department = departmentRepository.findById(departmentId)
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        List<Personnel> personnelList = memberList.stream()
+            .map(member -> changePersonnelAttendance(member, department))
+            .collect(Collectors.toList());
+
+        return personnelList.stream()
+            .map(DepartmentAttendanceMemberListResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    private Personnel changePersonnelAttendance(AttendanceMemberInfo member, Department department) {
+        Personnel personnel = personnelRepository.findById(member.getId())
+            .orElseThrow(() -> new IllegalArgumentException());
+
+        Attendance attendance = Attendance.builder()
+            .attendanceDate(member.getAttendanceDate())
+            .attendanceCheck(ABSENT)
+            .department(department)
+            .personnel(personnel)
+            .build();
+
+        Attendance recentAttendance = attendanceRepository.findTop1ByPersonnelIdOrderByAttendanceDateDesc(
+                personnel.getId()).orElse(attendance);
+
+        if (recentAttendance.getAttendanceDate() == attendance.getAttendanceDate() && !personnel.getAttendanceList().isEmpty()) {
+            recentAttendance.changeAttendanceCheck(ABSENT);
+        } else {
+            attendanceRepository.save(attendance);
+            personnel.addAttendance(attendance);
+        }
 
         return personnel;
     }

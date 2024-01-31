@@ -108,6 +108,7 @@ public class Personnel extends BaseEntity {
 
     public void addAttendance(Attendance attendance) {
         this.getAttendanceList().add(attendance);
+        attendance.addPersonnel(this);
     }
 
     public AttendanceCheck todayAttendance(LocalDate today) {

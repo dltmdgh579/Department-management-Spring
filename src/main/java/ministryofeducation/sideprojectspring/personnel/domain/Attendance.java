@@ -59,4 +59,13 @@ public class Attendance extends BaseEntity {
             .personnel(personnel)
             .build();
     }
+
+    public void changeAttendanceCheck(AttendanceCheck attendanceCheck){
+        this.attendanceCheck = attendanceCheck;
+    }
+
+    public void addPersonnel(Personnel personnel){
+        this.personnel = personnel;
+    }
+
 }

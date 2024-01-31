@@ -105,5 +105,4 @@ class AttendanceRepositoryTest {
         //then
         assertThat(attendanceCount).isEqualTo(2l);
     }
-
 }

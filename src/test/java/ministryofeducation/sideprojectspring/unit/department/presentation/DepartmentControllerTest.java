@@ -10,11 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import ministryofeducation.sideprojectspring.department.presentation.dto.request.DepartmentAttendanceMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAbsentListRequest.AbsenteeInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddMemberListRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupAddRequest;
 import ministryofeducation.sideprojectspring.department.presentation.dto.request.GroupModifyRequest;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentAttendanceMemberListResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentInfoResponse.SmallGroupInfo;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
@@ -288,6 +290,37 @@ class DepartmentControllerTest extends ControllerTest {
         //when
         ResultActions perform = mockMvc.perform(
             get("/api/{departmentId}/list/{todayDate}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+
+        //then
+        perform
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    void 부서_내_인원에_대한_출석체크를_반영한다() throws Exception {
+        //given
+        LocalDate today = LocalDate.of(2024, 1, 31);
+
+        DepartmentAttendanceMemberListRequest request = DepartmentAttendanceMemberListRequest.builder().build();
+
+        DepartmentAttendanceMemberListResponse response1 = DepartmentAttendanceMemberListResponse.builder()
+            .id(1l)
+            .name("test1")
+            .build();
+        DepartmentAttendanceMemberListResponse response2 = DepartmentAttendanceMemberListResponse.builder()
+            .id(2l)
+            .name("test2")
+            .build();
+
+        given(departmentService.attendanceDepartmentMember(anyLong(), any(DepartmentAttendanceMemberListRequest.class)))
+            .willReturn(List.of(response1, response2));
+
+        //when
+        ResultActions perform = mockMvc.perform(
+            post("/api/{departmentId}/attendance", 1l)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON));
 
         //then
         perform

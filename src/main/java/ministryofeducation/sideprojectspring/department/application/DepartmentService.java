@@ -180,6 +180,14 @@ public class DepartmentService {
             .collect(Collectors.toList());
     }
 
+    private Personnel changePersonnelSmallGroup(AddMemberInfo member, Department department, SmallGroup smallGroup) {
+        Personnel personnel = personnelRepository.findById(member.getId())
+            .orElseThrow(() -> new IllegalArgumentException());
+        personnel.changeSmallGroup(smallGroup);
+
+        return personnel;
+    }
+
     @Transactional
     public List<DepartmentAttendanceMemberListResponse> attendanceDepartmentMember(Long departmentId,
         DepartmentAttendanceMemberListRequest requestDto) {
@@ -197,14 +205,6 @@ public class DepartmentService {
             .collect(Collectors.toList());
     }
 
-    private Personnel changePersonnelSmallGroup(AddMemberInfo member, Department department, SmallGroup smallGroup) {
-        Personnel personnel = personnelRepository.findById(member.getId())
-            .orElseThrow(() -> new IllegalArgumentException());
-        personnel.changeSmallGroup(smallGroup);
-
-        return personnel;
-    }
-
     private Personnel changePersonnelAttendance(AttendanceMemberInfo member, Department department) {
         Personnel personnel = personnelRepository.findById(member.getId())
             .orElseThrow(() -> new IllegalArgumentException());
@@ -217,10 +217,9 @@ public class DepartmentService {
             .build();
 
         Attendance recentAttendance = attendanceRepository.findTop1ByPersonnelIdOrderByAttendanceDateDesc(
-                personnel.getId())
-            .orElseThrow(() -> new IllegalArgumentException());
+                personnel.getId()).orElse(attendance);
 
-        if (recentAttendance != null && recentAttendance.getAttendanceDate() == attendance.getAttendanceDate()) {
+        if (recentAttendance.getAttendanceDate() == attendance.getAttendanceDate() && !personnel.getAttendanceList().isEmpty()) {
             recentAttendance.changeAttendanceCheck(ABSENT);
         } else {
             attendanceRepository.save(attendance);

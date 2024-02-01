@@ -251,7 +251,7 @@ class DepartmentServiceTest {
 
         given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
         given(personnelRepository.findById(anyLong())).willReturn(Optional.of(personnel1), Optional.of(personnel2));
-        given(attendanceRepository.saveAll(anyCollection())).willReturn(List.of(attendance1, attendance2));
+        given(attendanceRepository.save(any(Attendance.class))).willReturn(attendance1, attendance2);
 
         //when
         List<GroupAbsentListResponse> groupAbsentListResponseDto = departmentService.checkGroupAbsentInfo(
@@ -348,6 +348,11 @@ class DepartmentServiceTest {
         Personnel personnel1 = testPersonnel(1l, "test1", department, null);
         Personnel personnel2 = testPersonnel(2l, "test2", department, null);
 
+        Attendance attendance1 = Attendance.createAttendance(1l, LocalDate.now(), ATTENDANCE, department,
+                personnel1);
+        Attendance attendance2 = Attendance.createAttendance(2l, LocalDate.now(), ATTENDANCE, department,
+                personnel2);
+
         AttendanceMemberInfo requestMemberInfo1 = AttendanceMemberInfo.builder()
             .id(1l)
             .name("test1")
@@ -366,6 +371,8 @@ class DepartmentServiceTest {
         given(departmentRepository.findById(anyLong())).willReturn(Optional.of(department));
         given(personnelRepository.findById(anyLong()))
             .willReturn(Optional.of(personnel1), Optional.of(personnel2));
+        given(attendanceRepository.save(any(Attendance.class))).willReturn(attendance1, attendance2);
+
 
         //when
         List<DepartmentAttendanceMemberListResponse> response = departmentService.attendanceDepartmentMember(

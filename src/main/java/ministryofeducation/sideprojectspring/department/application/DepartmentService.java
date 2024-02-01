@@ -31,6 +31,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.springframework.stereotype.Service;
@@ -138,9 +139,7 @@ public class DepartmentService {
             .map(absenteeInfo -> buildAttendance(absenteeInfo, department))
             .collect(Collectors.toList());
 
-        List<Attendance> savedAttendanceList = attendanceRepository.saveAll(attendanceList);
-
-        return savedAttendanceList.stream()
+        return attendanceList.stream()
             .map(GroupAbsentListResponse::of)
             .collect(Collectors.toList());
     }
@@ -156,8 +155,21 @@ public class DepartmentService {
             .personnel(personnel)
             .build();
 
-        personnel.addAttendance(attendance);
-        return attendance;
+        return saveAttendanceToRecent(personnel, attendance, ABSENT);
+    }
+
+    private Attendance saveAttendanceToRecent(Personnel personnel, Attendance attendance, AttendanceCheck attendanceCheck){
+        Attendance recentAttendance = attendanceRepository.findTop1ByPersonnelIdOrderByAttendanceDateDesc(
+                personnel.getId()).orElse(attendance);
+
+        if (recentAttendance.getAttendanceDate().isEqual(attendance.getAttendanceDate()) && !personnel.getAttendanceList().isEmpty()) {
+            recentAttendance.changeAttendanceCheck(attendanceCheck);
+            return recentAttendance;
+        }
+
+        Attendance savedAttendance = attendanceRepository.save(attendance);
+        personnel.addAttendance(savedAttendance);
+        return savedAttendance;
     }
 
     @Transactional
@@ -216,15 +228,7 @@ public class DepartmentService {
             .personnel(personnel)
             .build();
 
-        Attendance recentAttendance = attendanceRepository.findTop1ByPersonnelIdOrderByAttendanceDateDesc(
-                personnel.getId()).orElse(attendance);
-
-        if (recentAttendance.getAttendanceDate() == attendance.getAttendanceDate() && !personnel.getAttendanceList().isEmpty()) {
-            recentAttendance.changeAttendanceCheck(ATTENDANCE);
-        } else {
-            attendanceRepository.save(attendance);
-            personnel.addAttendance(attendance);
-        }
+        saveAttendanceToRecent(personnel, attendance, ATTENDANCE);
 
         return personnel;
     }

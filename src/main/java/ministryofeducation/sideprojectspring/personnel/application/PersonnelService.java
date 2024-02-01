@@ -60,9 +60,11 @@ public class PersonnelService {
 
         Personnel savedPersonnel = personnelRepository.save(personnel);
 
-        String name = savedPersonnel.getName();
-        String path = fileSaveToLocal.saveProfileImageFile(name, file);
-        personnel.changeProfileImage(path);
+        if(file != null){
+            String name = savedPersonnel.getName();
+            String path = fileSaveToLocal.saveProfileImageFile(name, file);
+            personnel.changeProfileImage(path);
+        }
 
         department.increaseEnrollment();
 

@@ -41,10 +41,10 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
     }
 
     private BooleanExpression departmentTypeEq(PersonnelCondRequest condition){
-        return departmentType1Eq(condition.getDepartmentType1())
+        return condition.getDepartmentType1() != null ? departmentType1Eq(condition.getDepartmentType1())
             .or(departmentType2Eq(condition.getDepartmentType2()))
             .or(departmentType3Eq(condition.getDepartmentType3()))
-            .or(departmentType4Eq(condition.getDepartmentType4()));
+            .or(departmentType4Eq(condition.getDepartmentType4())) : null;
     }
 
     private BooleanExpression departmentType1Eq(DepartmentType departmentType){

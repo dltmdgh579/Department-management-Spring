@@ -1,6 +1,7 @@
 package ministryofeducation.sideprojectspring.unit.Personnel.application;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
@@ -19,6 +20,7 @@ import ministryofeducation.sideprojectspring.personnel.application.PersonnelServ
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
@@ -54,26 +56,33 @@ class PersonnelServiceTest {
     @Test
     public void 전체_인원을_조회한다() {
         //given
-        Personnel personnel1 = testPersonnel(1l, "test1", "test1@email.com", "010-0000-0001");
-        Personnel personnel2 = testPersonnel(2l, "test2", "test2@email.com", "010-0000-0002");
-        Personnel personnel3 = testPersonnel(3l, "test3", "test3@email.com", "010-0000-0003");
-        List<Personnel> personnelList = List.of(personnel1, personnel2, personnel3);
+        PersonnelListResponse response1 = PersonnelListResponse.builder()
+            .name("test1")
+            .phone("010-0000-0001")
+            .build();
+        PersonnelListResponse response2 = PersonnelListResponse.builder()
+            .name("test2")
+            .phone("010-0000-0002")
+            .build();
 
-        given(personnelRepository.findAll()).willReturn(personnelList);
+        PersonnelCondRequest condition = PersonnelCondRequest.builder().build();
+
+        given(personnelRepository.findAllByCondition(condition)).willReturn(
+            List.of(response1, response2)
+        );
 
         //when
-        List<PersonnelListResponse> personnelListResponse = personnelService.personnelList();
+        List<PersonnelListResponse> personnelListResponse = personnelService.personnelList(condition);
 
         //then
-        assertThat(personnelListResponse).hasSize(3)
+        assertThat(personnelListResponse).hasSize(2)
             .extracting("name", "phone")
             .containsExactlyInAnyOrder(
                 tuple("test1", "010-0000-0001"),
-                tuple("test2", "010-0000-0002"),
-                tuple("test3", "010-0000-0003")
+                tuple("test2", "010-0000-0002")
             );
 
-        verify(personnelRepository, times(1)).findAll();
+        verify(personnelRepository, times(1)).findAllByCondition(condition);
     }
 
     @Test
@@ -96,7 +105,7 @@ class PersonnelServiceTest {
         //given
         PersonnelPostRequest personnelPostRequest = PersonnelPostRequest.builder()
             .name("test")
-            .departmentType(DepartmentType.JOSHUA)
+            .departmentType(JOSHUA)
             .dateOfBirth(LocalDate.of(1997, 8, 26))
             .phone("010-0000-0000")
             .email("test@email.com")

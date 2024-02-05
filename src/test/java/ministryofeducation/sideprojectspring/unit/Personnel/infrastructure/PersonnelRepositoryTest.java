@@ -1,7 +1,11 @@
 package ministryofeducation.sideprojectspring.unit.Personnel.infrastructure;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import ministryofeducation.sideprojectspring.config.TestQueryDslConfig;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
@@ -10,23 +14,27 @@ import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.Attendance.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.JOSHUA;
+import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.KINDERGARTEN;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @ActiveProfiles("test")
+@Import(TestQueryDslConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PersonnelRepositoryTest {
 
@@ -43,24 +51,76 @@ class PersonnelRepositoryTest {
     private AttendanceRepository attendanceRepository;
 
     @Test
-    void 개인정보_전체_리스트를_불러온다(){
+    void 개인정보_전체_리스트를_불러온다() {
         // given
         Personnel personnel1 = testPersonnel(1l, "test1", "test1@email.com");
         Personnel personnel2 = testPersonnel(2l, "test2", "test2@email.com");
-        Personnel personnel3 = testPersonnel(3l, "test3", "test3@email.com");
-        personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
+        personnelRepository.saveAll(List.of(personnel1, personnel2));
+
+        PersonnelCondRequest condition = PersonnelCondRequest.builder().build();
 
         // when
-        List<Personnel> personnelList = personnelRepository.findAll();
+        List<PersonnelListResponse> personnelList = personnelRepository.findAllByCondition(condition);
 
         // then
-        assertThat(personnelList).hasSize(3)
-            .extracting("name", "email")
-            .containsExactlyInAnyOrder(
-                tuple("test1", "test1@email.com"),
-                tuple("test2", "test2@email.com"),
-                tuple("test3", "test3@email.com")
+        assertThat(personnelList).hasSize(2)
+            .extracting("name")
+            .containsExactly(
+                "test1", "test2"
             );
+    }
+
+    @Test
+    public void 소속_부서를_조건으로_인원을_조회한다() {
+        //given
+        Personnel personnel1 = Personnel.builder()
+            .name("test1")
+            .departmentType(JOSHUA)
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("test2")
+            .departmentType(KINDERGARTEN)
+            .build();
+        personnelRepository.saveAll(List.of(personnel1, personnel2));
+
+        PersonnelCondRequest condition = PersonnelCondRequest.builder()
+            .departmentType1(JOSHUA)
+            .build();
+
+        //when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(condition);
+
+        //then
+        assertThat(personnelListResponse).hasSize(1)
+            .extracting("name")
+            .containsExactly("test1");
+    }
+
+    @Test
+    public void 소속_부서를_조건으로_여러_부서의_인원을_조회한다() {
+        //given
+        Personnel personnel1 = Personnel.builder()
+            .name("test1")
+            .departmentType(JOSHUA)
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("test2")
+            .departmentType(KINDERGARTEN)
+            .build();
+        personnelRepository.saveAll(List.of(personnel1, personnel2));
+
+        PersonnelCondRequest condition = PersonnelCondRequest.builder()
+            .departmentType1(JOSHUA)
+            .departmentType2(KINDERGARTEN)
+            .build();
+
+        //when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(condition);
+
+        //then
+        assertThat(personnelListResponse).hasSize(2)
+            .extracting("name")
+            .containsExactly("test1", "test2");
     }
 
     @Test
@@ -83,12 +143,8 @@ class PersonnelRepositoryTest {
 
         //then
         assertThat(groupInfoResponse).hasSize(3)
-            .extracting("id", "name")
-            .containsExactlyInAnyOrder(
-                tuple(1l, "test1"),
-                tuple(2l, "test2"),
-                tuple(3l, "test3")
-            );
+            .extracting("name")
+            .containsExactly("test1", "test2", "test3");
     }
 
     @Test
@@ -112,15 +168,13 @@ class PersonnelRepositoryTest {
         attendanceRepository.saveAll(List.of(attendance1, attendance2));
 
         //when
-        List<Personnel> groupAbsentInfoResponse = personnelRepository.findByAbsentPersonnel(department.getId(), smallGroup.getId(), absentDate);
+        List<Personnel> groupAbsentInfoResponse = personnelRepository.findByAbsentPersonnel(department.getId(),
+            smallGroup.getId(), absentDate);
 
         //then
         assertThat(groupAbsentInfoResponse).hasSize(2)
-            .extracting("id", "name")
-            .containsExactlyInAnyOrder(
-                tuple(1l, "test1"),
-                tuple(3l, "test3")
-            );
+            .extracting("name")
+            .containsExactly("test1", "test3");
     }
 
     @Test
@@ -139,11 +193,7 @@ class PersonnelRepositoryTest {
 
         //then
         assertThat(personnelList).hasSize(3)
-            .extracting("id", "name")
-            .containsExactlyInAnyOrder(
-                tuple(1l, "test1"),
-                tuple(2l, "test2"),
-                tuple(3l, "test3")
-            );
+            .extracting("name")
+            .containsExactly("test1", "test2", "test3");
     }
 }

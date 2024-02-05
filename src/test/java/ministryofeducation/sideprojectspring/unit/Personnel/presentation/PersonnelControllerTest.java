@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
@@ -36,7 +37,7 @@ class PersonnelControllerTest extends ControllerTest {
             PersonnelListResponse.of(testPersonnel(3l, "test3", "test3@email.com"))
         );
 
-        given(personnelService.personnelList()).willReturn(personnelListResponse);
+        given(personnelService.personnelList(any())).willReturn(personnelListResponse);
 
         String response = objectMapper.writeValueAsString(personnelListResponse);
 

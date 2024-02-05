@@ -12,6 +12,7 @@ import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
@@ -28,12 +29,8 @@ public class PersonnelService {
     private final DepartmentRepository departmentRepository;
     private final FileSaveToLocal fileSaveToLocal;
 
-    public List<PersonnelListResponse> personnelList() {
-        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAll().stream()
-            .map(PersonnelListResponse::of)
-            .collect(Collectors.toList());
-
-        return personnelListResponse;
+    public List<PersonnelListResponse> personnelList(PersonnelCondRequest condition) {
+        return personnelRepository.findAllByCondition(condition);
     }
 
     public PersonnelDetailResponse personnelDetail(Long id) {

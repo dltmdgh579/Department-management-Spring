@@ -8,9 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
-
-    List<Personnel> findAll();
+public interface PersonnelRepository extends JpaRepository<Personnel, Long>, PersonnelCustomRepository {
 
     List<Personnel> findByDepartmentIdAndSmallGroupId(Long departmentId, Long smallGroupId);
 

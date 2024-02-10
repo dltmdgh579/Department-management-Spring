@@ -3,6 +3,8 @@ package ministryofeducation.sideprojectspring.personnel.application;
 import static ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,13 +14,15 @@ import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
-import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelPostResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -29,8 +33,8 @@ public class PersonnelService {
     private final DepartmentRepository departmentRepository;
     private final FileSaveToLocal fileSaveToLocal;
 
-    public List<PersonnelListResponse> personnelList(PersonnelCondRequest condition) {
-        return personnelRepository.findAllByCondition(condition);
+    public List<PersonnelListResponse> personnelList(PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond) {
+        return personnelRepository.findAllByCondition(filterCond, orderCond);
     }
 
     public PersonnelDetailResponse personnelDetail(Long id) {

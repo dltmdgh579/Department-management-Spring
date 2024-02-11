@@ -1,7 +1,10 @@
 package ministryofeducation.sideprojectspring.personnel.infrastructure;
 
 import static ministryofeducation.sideprojectspring.personnel.domain.QPersonnel.*;
+import static ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest.*;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -26,6 +29,8 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
 
     @Override
     public List<PersonnelListResponse> findAllByCondition(PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond) {
+        OrderSpecifier[] orderSpecifiers = createOrderSpecifier(orderCond);
+
         return queryFactory
             .select(Projections.constructor(PersonnelListResponse.class,
                 personnel.id,
@@ -38,6 +43,7 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
             ))
             .where(filterEq(filterCond))
             .from(personnel)
+            .orderBy(orderSpecifiers)
             .fetch();
     }
 
@@ -69,7 +75,6 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
 
         return booleanExpressionDepartmentType[0].or(booleanExpressionGender);
     }
-
     private BooleanExpression departmentTypeEq(DepartmentType departmentType){
         return departmentType != null ? personnel.departmentType.eq(departmentType) : null;
     }
@@ -82,4 +87,14 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
         return gender != null ? personnel.gender.eq(gender) : null;
     }
 
+    private OrderSpecifier[] createOrderSpecifier(PersonnelOrderCondRequest orderCond) {
+        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+
+        if(Objects.isNull(orderCond)){
+            orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
+        } else if(orderCond.equals(AGE)){
+            orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.dateOfBirth));
+        }
+        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
+    }
 }

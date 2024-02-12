@@ -28,6 +28,9 @@ public class Personnel extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     private LocalDate dateOfBirth;
 
     private String phone;
@@ -57,11 +60,12 @@ public class Personnel extends BaseEntity {
     private List<Attendance> attendanceList = new ArrayList<>();
 
     @Builder
-    private Personnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline, String email,
+    private Personnel(Long id, String name, Gender gender, LocalDate dateOfBirth, String phone, String landline, String email,
         String workSpace, String address, String profileImage, DepartmentType departmentType, Department department,
         SmallGroup smallGroup) {
         this.id = id;
         this.name = name;
+        this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
         this.landline = landline;
@@ -75,8 +79,7 @@ public class Personnel extends BaseEntity {
     }
 
     public static Personnel createPersonnel(Long id, String name, LocalDate dateOfBirth, String phone, String landline,
-        String email,
-        String workSpace, String address, String profileImage, DepartmentType departmentType, Department department,
+        String email, String workSpace, String address, String profileImage, DepartmentType departmentType, Department department,
         SmallGroup smallGroup) {
         return Personnel.builder()
             .id(id)

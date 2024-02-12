@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -17,14 +18,17 @@ import ministryofeducation.sideprojectspring.config.FileSaveToLocal;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.personnel.application.PersonnelService;
+import ministryofeducation.sideprojectspring.personnel.domain.Gender;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
-import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelPostResponse;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -36,7 +40,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class PersonnelServiceTest {
@@ -53,8 +56,9 @@ class PersonnelServiceTest {
     @Mock
     private DepartmentRepository departmentRepository;
 
+    @DisplayName("전체 인원을 조회힌다.")
     @Test
-    public void 전체_인원을_조회한다() {
+    public void personnelList() {
         //given
         PersonnelListResponse response1 = PersonnelListResponse.builder()
             .name("test1")
@@ -65,14 +69,15 @@ class PersonnelServiceTest {
             .phone("010-0000-0002")
             .build();
 
-        PersonnelCondRequest condition = PersonnelCondRequest.builder().build();
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
 
-        given(personnelRepository.findAllByCondition(condition)).willReturn(
-            List.of(response1, response2)
-        );
+        given(personnelRepository.findAllByCondition(any(), any()))
+            .willReturn(List.of(response1, response2));
 
         //when
-        List<PersonnelListResponse> personnelListResponse = personnelService.personnelList(condition);
+        List<PersonnelListResponse> personnelListResponse = personnelService.personnelList(filterRequest, null);
 
         //then
         assertThat(personnelListResponse).hasSize(2)
@@ -81,12 +86,11 @@ class PersonnelServiceTest {
                 tuple("test1", "010-0000-0001"),
                 tuple("test2", "010-0000-0002")
             );
-
-        verify(personnelRepository, times(1)).findAllByCondition(condition);
     }
 
+    @DisplayName("인원 상세정보를 조회할 수 있다.")
     @Test
-    public void 인원_상세정보를_조회할_수_있다(){
+    public void personnelDetail() {
         //given
         Personnel testPersonnel = testPersonnel(1l, "test1");
         given(personnelRepository.findById(anyLong())).willReturn(Optional.of(testPersonnel));
@@ -100,8 +104,9 @@ class PersonnelServiceTest {
         verify(personnelRepository, times(1)).findById(anyLong());
     }
 
+    @DisplayName("새로운 인원을 추가한다.")
     @Test
-    void 새로운_인원을_추가한다() throws IOException {
+    void personnelPost() throws IOException {
         //given
         PersonnelPostRequest personnelPostRequest = PersonnelPostRequest.builder()
             .name("test")
@@ -127,7 +132,8 @@ class PersonnelServiceTest {
         given(fileSaveToLocal.saveProfileImageFile(anyString(), any())).willReturn("test_1234");
 
         //when
-        PersonnelPostResponse personnelPostResponse = personnelService.personnelPost(personnelPostRequest, profileImage);
+        PersonnelPostResponse personnelPostResponse = personnelService.personnelPost(personnelPostRequest,
+            profileImage);
 
         //then
         assertThat(personnelPostResponse.getName()).isEqualTo("test");

@@ -1,9 +1,7 @@
 package ministryofeducation.sideprojectspring.unit.Personnel.infrastructure;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import ministryofeducation.sideprojectspring.config.TestQueryDslConfig;
 import ministryofeducation.sideprojectspring.department.domain.Department;
@@ -11,12 +9,14 @@ import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.department.infrastructure.SmallGroupRepository;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
+import ministryofeducation.sideprojectspring.personnel.domain.Gender;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
-import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -27,15 +27,16 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.Attendance.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.Gender.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.JOSHUA;
 import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.KINDERGARTEN;
+import static ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
 @Import(TestQueryDslConfig.class)
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PersonnelRepositoryTest {
 
     @Autowired
@@ -50,29 +51,55 @@ class PersonnelRepositoryTest {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
+    @DisplayName("개인정보 전체 리스트를 불러온다. (정렬 기본조건은 이름 내림차순이다)")
     @Test
-    void 개인정보_전체_리스트를_불러온다() {
+    void findAll() {
         // given
-        Personnel personnel1 = testPersonnel(1l, "test1", "test1@email.com");
-        Personnel personnel2 = testPersonnel(2l, "test2", "test2@email.com");
+        Department departmentJoshua = Department.builder()
+            .name("JOSHUA")
+            .build();
+        Department departmentKindergarten = Department.builder()
+            .name("KINDERGARTEN")
+            .build();
+        departmentRepository.saveAll(List.of(departmentJoshua, departmentKindergarten));
+
+        Personnel personnel1 = Personnel.builder()
+            .name("test1")
+            .department(departmentJoshua)
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("test2")
+            .department(departmentKindergarten)
+            .build();
         personnelRepository.saveAll(List.of(personnel1, personnel2));
 
-        PersonnelCondRequest condition = PersonnelCondRequest.builder().build();
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
 
         // when
-        List<PersonnelListResponse> personnelList = personnelRepository.findAllByCondition(condition);
+        List<PersonnelListResponse> personnelList = personnelRepository.findAllByCondition(filterRequest, null);
 
         // then
         assertThat(personnelList).hasSize(2)
             .extracting("name")
             .containsExactly(
-                "test1", "test2"
+                "test2", "test1"
             );
     }
 
+    @DisplayName("소속 부서를 조건으로 인원을 조회한다.")
     @Test
-    public void 소속_부서를_조건으로_인원을_조회한다() {
+    public void findAllInDepartmentType() {
         //given
+        Department departmentJoshua = Department.builder()
+            .name("JOSHUA")
+            .build();
+        Department departmentKindergarten = Department.builder()
+            .name("KINDERGARTEN")
+            .build();
+        departmentRepository.saveAll(List.of(departmentJoshua, departmentKindergarten));
+
         Personnel personnel1 = Personnel.builder()
             .name("test1")
             .departmentType(JOSHUA)
@@ -83,12 +110,12 @@ class PersonnelRepositoryTest {
             .build();
         personnelRepository.saveAll(List.of(personnel1, personnel2));
 
-        PersonnelCondRequest condition = PersonnelCondRequest.builder()
-            .departmentType1(JOSHUA)
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(List.of(JOSHUA))
             .build();
 
-        //when
-        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(condition);
+        // when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(filterRequest, null);
 
         //then
         assertThat(personnelListResponse).hasSize(1)
@@ -96,35 +123,96 @@ class PersonnelRepositoryTest {
             .containsExactly("test1");
     }
 
+    @DisplayName("성별을 조건으로 인원을 조회한다.")
     @Test
-    public void 소속_부서를_조건으로_여러_부서의_인원을_조회한다() {
+    public void findAllInGender() {
         //given
         Personnel personnel1 = Personnel.builder()
             .name("test1")
-            .departmentType(JOSHUA)
+            .gender(M)
             .build();
         Personnel personnel2 = Personnel.builder()
             .name("test2")
-            .departmentType(KINDERGARTEN)
+            .gender(W)
             .build();
         personnelRepository.saveAll(List.of(personnel1, personnel2));
 
-        PersonnelCondRequest condition = PersonnelCondRequest.builder()
-            .departmentType1(JOSHUA)
-            .departmentType2(KINDERGARTEN)
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .gender(M)
             .build();
 
-        //when
-        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(condition);
+        // when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(filterRequest, null);
 
         //then
-        assertThat(personnelListResponse).hasSize(2)
+        assertThat(personnelListResponse).hasSize(1)
             .extracting("name")
-            .containsExactly("test1", "test2");
+            .containsExactly("test1");
     }
 
+    @DisplayName("나이를 기준으로 인원을 내림차순 정렬한다.")
     @Test
-    void 특정_부서_내_특정_그룹에_속한_인원정보를_조회한다() {
+    public void findAllOrderByAgeDesc() {
+        //given
+        Personnel personnel1 = Personnel.builder()
+            .name("test1")
+            .dateOfBirth(LocalDate.of(2000, 1, 1))
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("test2")
+            .dateOfBirth(LocalDate.of(2001, 1, 2))
+            .build();
+        Personnel personnel3 = Personnel.builder()
+            .name("test3")
+            .dateOfBirth(LocalDate.of(2001, 1, 1))
+            .build();
+        personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
+
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
+
+        // when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(filterRequest, AGE);
+
+        //then
+        assertThat(personnelListResponse).hasSize(3)
+            .extracting("name")
+            .containsExactly("test2", "test3", "test1");
+    }
+
+    @DisplayName("이름을 기준으로 인원을 내림차순 정렬한다.")
+    @Test
+    public void findAllOrderByNameDesc() {
+        //given
+        Personnel personnel1 = Personnel.builder()
+            .name("test2")
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("test1")
+            .build();
+        Personnel personnel3 = Personnel.builder()
+            .name("test3")
+            .build();
+        personnelRepository.saveAll(List.of(personnel1, personnel2, personnel3));
+
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
+
+        // when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findAllByCondition(filterRequest, NAME);
+
+        //then
+        assertThat(personnelListResponse).hasSize(3)
+            .extracting("name")
+            .containsExactly("test3", "test2", "test1");
+    }
+
+    @DisplayName("특정 부서 내 특정 그룹에 속한 인원정보를 조회한다.")
+    @Test
+    void findByDepartmentIdAndSmallGroupId() {
         //given
         Department department = Department.createDepartment(1l, "department", 20);
         departmentRepository.save(department);
@@ -147,8 +235,9 @@ class PersonnelRepositoryTest {
             .containsExactly("test1", "test2", "test3");
     }
 
+    @DisplayName("그룹 내 결석인원을 조회한다.")
     @Test
-    void 그룹_내_결석인원을_조회한다() {
+    void findByAbsentPersonnel() {
         //given
         LocalDate absentDate = LocalDate.of(2023, 12, 26);
 
@@ -177,8 +266,9 @@ class PersonnelRepositoryTest {
             .containsExactly("test1", "test3");
     }
 
+    @DisplayName("부서 내 모든 인원을 조회한다.")
     @Test
-    void 부서_내_모든_인원을_조회한다() {
+    void findByDepartmentId() {
         //given
         Department department = Department.createDepartment(1l, "departmentName", 20);
         departmentRepository.save(department);

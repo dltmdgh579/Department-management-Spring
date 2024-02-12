@@ -73,7 +73,7 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
             return booleanExpressionGender;
         }
 
-        return booleanExpressionDepartmentType[0].or(booleanExpressionGender);
+        return booleanExpressionDepartmentType[0].and(booleanExpressionGender);
     }
     private BooleanExpression departmentTypeEq(DepartmentType departmentType){
         return departmentType != null ? personnel.departmentType.eq(departmentType) : null;

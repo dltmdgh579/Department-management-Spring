@@ -94,6 +94,8 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
         } else if(orderCond.equals(AGE)){
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.dateOfBirth));
+        } else if(orderCond.equals(NAME)){
+            orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
         }
         return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
     }

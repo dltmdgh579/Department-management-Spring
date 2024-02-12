@@ -11,12 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
-import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelPostRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelDetailResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelListResponse;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.response.PersonnelPostResponse;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -25,11 +25,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.ResultActions;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PersonnelControllerTest extends ControllerTest {
 
+    @DisplayName("전체 인원 리스트를 조회할 수 있다.")
     @Test
-    public void 전체_인원_리스트를_조회할_수_있다() throws Exception {
+    public void personnelList() throws Exception {
         //given
         List<PersonnelListResponse> personnelListResponse = List.of(
             PersonnelListResponse.of(testPersonnel(1l, "test1", "test1@email.com")),
@@ -37,13 +37,12 @@ class PersonnelControllerTest extends ControllerTest {
             PersonnelListResponse.of(testPersonnel(3l, "test3", "test3@email.com"))
         );
 
-        given(personnelService.personnelList(any())).willReturn(personnelListResponse);
+        given(personnelService.personnelList(any(), any())).willReturn(personnelListResponse);
 
         String response = objectMapper.writeValueAsString(personnelListResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/api"
-            + "/list"));
+        ResultActions perform = mockMvc.perform(get("/api/list"));
 
         //then
         perform
@@ -51,8 +50,9 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(3));
     }
 
+    @DisplayName("인원 상세정보를 조회할 수 있다.")
     @Test
-    public void 인원_상세정보를_조회할_수_있다() throws Exception{
+    public void personnelDetail() throws Exception{
         //given
         PersonnelDetailResponse response = PersonnelDetailResponse.of(testPersonnel(1l, "test"));
 
@@ -67,8 +67,9 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.name").value("test"));
     }
 
+    @DisplayName("새로운 인원을 추가한다.")
     @Test
-    void 새로운_인원을_추가한다() throws Exception {
+    void personnelPost() throws Exception {
         //given
         PersonnelPostRequest request = PersonnelPostRequest.builder()
             .name("test")

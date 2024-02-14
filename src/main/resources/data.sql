@@ -1,7 +1,7 @@
 -- 부서
-insert into department(name) values('KINDERGARTEN');
-insert into department(name) values('HOLYKIDS');
-insert into department(name) values('PAULCOMMUNITY');
+insert into department(name, enrollment) values('KINDERGARTEN', 0);
+insert into department(name, enrollment) values('HOLYKIDS', 0);
+insert into department(name, enrollment) values('PAULCOMMUNITY', 0);
 insert into department(name, enrollment) values('JOSHUA', 3);
 
 -- 소그룹

@@ -33,8 +33,16 @@ public class PersonnelService {
     private final DepartmentRepository departmentRepository;
     private final FileSaveToLocal fileSaveToLocal;
 
-    public List<PersonnelListResponse> personnelList(PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond) {
+    public List<PersonnelListResponse> personnelList(PersonnelFilterCondRequest filterCond,
+        PersonnelOrderCondRequest orderCond) {
         return personnelRepository.findAllByCondition(filterCond, orderCond);
+    }
+
+    public List<PersonnelListResponse> searchPersonnel(PersonnelFilterCondRequest filterCond,
+        PersonnelOrderCondRequest orderCond, String searchWord) {
+        String[] searchWordRange = WordIndex.searchWordRange(searchWord);
+
+        return personnelRepository.findPersonnelByName(filterCond, orderCond, searchWordRange);
     }
 
     public PersonnelDetailResponse personnelDetail(Long id) {
@@ -44,7 +52,8 @@ public class PersonnelService {
     }
 
     @Transactional
-    public PersonnelPostResponse personnelPost(PersonnelPostRequest personnelPostRequest, MultipartFile file) throws IOException {
+    public PersonnelPostResponse personnelPost(PersonnelPostRequest personnelPostRequest, MultipartFile file)
+        throws IOException {
         Department department = departmentRepository.findByName(personnelPostRequest.getDepartmentType().name())
             .orElseThrow(() -> new IllegalArgumentException());
 
@@ -61,7 +70,7 @@ public class PersonnelService {
 
         Personnel savedPersonnel = personnelRepository.save(personnel);
 
-        if(file != null){
+        if (file != null) {
             String name = savedPersonnel.getName();
             String path = fileSaveToLocal.saveProfileImageFile(name, file);
             personnel.changeProfileImage(path);

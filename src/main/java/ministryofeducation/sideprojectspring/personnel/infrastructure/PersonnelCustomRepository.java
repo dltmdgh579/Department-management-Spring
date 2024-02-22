@@ -9,5 +9,6 @@ import ministryofeducation.sideprojectspring.personnel.presentation.dto.response
 public interface PersonnelCustomRepository {
 
     List<PersonnelListResponse> findAllByCondition(PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond);
+    List<PersonnelListResponse> findPersonnelByName(PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond, String[] searchWordRange);
 
 }

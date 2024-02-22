@@ -28,7 +28,8 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<PersonnelListResponse> findAllByCondition(PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond) {
+    public List<PersonnelListResponse> findAllByCondition(PersonnelFilterCondRequest filterCond,
+        PersonnelOrderCondRequest orderCond) {
         OrderSpecifier[] orderSpecifiers = createOrderSpecifier(orderCond);
 
         return queryFactory
@@ -47,9 +48,30 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
             .fetch();
     }
 
-    private BooleanExpression filterEq(PersonnelFilterCondRequest filterCond){
+    @Override
+    public List<PersonnelListResponse> findPersonnelByName(PersonnelFilterCondRequest filterCond,
+        PersonnelOrderCondRequest orderCond, String[] searchWordRange) {
+        OrderSpecifier[] orderSpecifiers = createOrderSpecifier(orderCond);
+
+        return queryFactory
+            .select(Projections.constructor(PersonnelListResponse.class,
+                personnel.id,
+                personnel.name,
+                personnel.dateOfBirth,
+                personnel.phone,
+                personnel.address,
+                personnel.profileImage,
+                personnel.departmentType
+            ))
+            .where(filterEq(filterCond), searchWord(searchWordRange))
+            .from(personnel)
+            .orderBy(orderSpecifiers)
+            .fetch();
+    }
+
+    private BooleanExpression filterEq(PersonnelFilterCondRequest filterCond) {
         final BooleanExpression[] booleanExpressionDepartmentType = new BooleanExpression[1];
-        if(!filterCond.getDepartmentTypeList().isEmpty()){
+        if (!filterCond.getDepartmentTypeList().isEmpty()) {
             booleanExpressionDepartmentType[0] = (departmentTypeEq(filterCond.getDepartmentTypeList().get(0)));
 
             filterCond.getDepartmentTypeList().stream()
@@ -63,40 +85,45 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
         }
 
         BooleanExpression booleanExpressionGender;
-        if(!Objects.isNull(filterCond.getGender())){
+        if (!Objects.isNull(filterCond.getGender())) {
             booleanExpressionGender = genderEq(filterCond.getGender());
         } else {
             booleanExpressionGender = null;
         }
 
-        if(booleanExpressionDepartmentType[0] == null){
+        if (booleanExpressionDepartmentType[0] == null) {
             return booleanExpressionGender;
         }
 
         return booleanExpressionDepartmentType[0].and(booleanExpressionGender);
     }
-    private BooleanExpression departmentTypeEq(DepartmentType departmentType){
+
+    private BooleanExpression departmentTypeEq(DepartmentType departmentType) {
         return departmentType != null ? personnel.departmentType.eq(departmentType) : null;
     }
 
-    private BooleanExpression departmentTypeEqOr(BooleanExpression booleanExpression, DepartmentType departmentType){
+    private BooleanExpression departmentTypeEqOr(BooleanExpression booleanExpression, DepartmentType departmentType) {
         return booleanExpression.or(departmentTypeEq(departmentType));
     }
 
-    private BooleanExpression genderEq(Gender gender){
+    private BooleanExpression genderEq(Gender gender) {
         return gender != null ? personnel.gender.eq(gender) : null;
     }
 
     private OrderSpecifier[] createOrderSpecifier(PersonnelOrderCondRequest orderCond) {
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 
-        if(Objects.isNull(orderCond)){
+        if (Objects.isNull(orderCond)) {
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
-        } else if(orderCond.equals(AGE)){
+        } else if (orderCond.equals(AGE)) {
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.dateOfBirth));
-        } else if(orderCond.equals(NAME)){
+        } else if (orderCond.equals(NAME)) {
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
         }
         return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
+    }
+
+    private BooleanExpression searchWord(String[] searchWordRange){
+        return searchWordRange != null? personnel.name.between(searchWordRange[0], searchWordRange[1]) : null;
     }
 }

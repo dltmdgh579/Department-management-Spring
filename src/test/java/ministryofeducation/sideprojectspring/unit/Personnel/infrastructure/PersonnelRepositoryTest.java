@@ -210,6 +210,58 @@ class PersonnelRepositoryTest {
             .containsExactly("test3", "test2", "test1");
     }
 
+    @DisplayName("인원을 이름으로 검색한다.")
+    @Test
+    public void findPersonnelByName() {
+        //given
+        Personnel personnel1 = Personnel.builder()
+            .name("홍길동")
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("김철수")
+            .build();
+        personnelRepository.saveAll(List.of(personnel1, personnel2));
+
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
+
+        String[] searchWord = new String[] {"홍길동", "홍길동"};
+
+        // when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findPersonnelByName(filterRequest, NAME, searchWord);
+
+        //then
+        assertThat(personnelListResponse).hasSize(1)
+            .extracting("name")
+            .containsExactly("홍길동");
+    }
+
+    @DisplayName("검색어가 없으면 전체 인원을 조회한다.")
+    @Test
+    public void findPersonnelByName_search_null() {
+        //given
+        Personnel personnel1 = Personnel.builder()
+            .name("홍길동")
+            .build();
+        Personnel personnel2 = Personnel.builder()
+            .name("김철수")
+            .build();
+        personnelRepository.saveAll(List.of(personnel1, personnel2));
+
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
+
+        // when
+        List<PersonnelListResponse> personnelListResponse = personnelRepository.findPersonnelByName(filterRequest, NAME, null);
+
+        //then
+        assertThat(personnelListResponse).hasSize(2)
+            .extracting("name")
+            .containsExactly("홍길동", "김철수");
+    }
+
     @DisplayName("특정 부서 내 특정 그룹에 속한 인원정보를 조회한다.")
     @Test
     void findByDepartmentIdAndSmallGroupId() {

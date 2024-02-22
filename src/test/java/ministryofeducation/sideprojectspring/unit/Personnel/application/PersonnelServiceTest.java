@@ -88,6 +88,37 @@ class PersonnelServiceTest {
             );
     }
 
+    @DisplayName("검색 조건에 맞도록 검색어를 변환하여 검색한다.")
+    @Test
+    public void searchPersonnel() {
+        //given
+        PersonnelListResponse response1 = PersonnelListResponse.builder()
+            .name("홍길동")
+            .phone("010-0000-0001")
+            .build();
+        PersonnelListResponse response2 = PersonnelListResponse.builder()
+            .name("김철수")
+            .phone("010-0000-0002")
+            .build();
+
+        PersonnelFilterCondRequest filterRequest = PersonnelFilterCondRequest.builder()
+            .departmentTypeList(new ArrayList<>())
+            .build();
+
+        given(personnelRepository.findPersonnelByName(any(), any(), any()))
+            .willReturn(List.of(response1));
+
+        //when
+        List<PersonnelListResponse> personnelListResponse = personnelService.searchPersonnel(filterRequest, null, "ㅎ");
+
+        //then
+        assertThat(personnelListResponse).hasSize(1)
+            .extracting("name", "phone")
+            .containsExactly(
+                tuple("홍길동", "010-0000-0001")
+            );
+    }
+
     @DisplayName("인원 상세정보를 조회할 수 있다.")
     @Test
     public void personnelDetail() {

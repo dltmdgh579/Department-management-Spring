@@ -32,8 +32,8 @@ public class PersonnelController {
 
     @GetMapping("/list")
     public ResponseEntity<List<PersonnelListResponse>> personnelList(
-        @RequestParam(value = "departmentFilter", required = false) List<DepartmentType> departmentFilter,
-        @RequestParam(value = "genderFilter", required = false) Gender genderFilter,
+        @RequestParam(value = "department", required = false) List<DepartmentType> departmentFilter,
+        @RequestParam(value = "gender", required = false) Gender genderFilter,
         @RequestParam(value = "order", required = false) PersonnelOrderCondRequest orderCond
         ){
 
@@ -42,6 +42,23 @@ public class PersonnelController {
 
         List<PersonnelListResponse> responseDto = personnelService.personnelList(
             new PersonnelFilterCondRequest(departmentFilter, genderFilter), orderCond);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/list/search")
+    public ResponseEntity<List<PersonnelListResponse>> searchPersonnel(
+        @RequestParam(value = "department", required = false) List<DepartmentType> departmentFilter,
+        @RequestParam(value = "gender", required = false) Gender genderFilter,
+        @RequestParam(value = "order", required = false) PersonnelOrderCondRequest orderCond,
+        @RequestParam(value = "search", required = false) String searchWord
+        ){
+
+        if(departmentFilter == null)
+            departmentFilter = new ArrayList<>();
+
+        List<PersonnelListResponse> responseDto = personnelService.searchPersonnel(
+            new PersonnelFilterCondRequest(departmentFilter, genderFilter), orderCond, searchWord);
 
         return ResponseEntity.ok(responseDto);
     }

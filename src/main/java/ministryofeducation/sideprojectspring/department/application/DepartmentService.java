@@ -128,6 +128,7 @@ public class DepartmentService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<GroupAbsentListResponse> checkGroupAbsentInfo(Long departmentId, Long groupId,
         GroupAbsentListRequest requestDto) {
         List<AbsenteeInfo> absenteeList = requestDto.getAbsenteeList();

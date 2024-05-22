@@ -1,6 +1,6 @@
 package ministryofeducation.sideprojectspring.department.application;
 
-import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,7 +31,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,7 @@ public class DepartmentService {
     private final PersonnelRepository personnelRepository;
 
     public DepartmentInfoResponse getDepartmentInfo(Long departmentId) {
-        Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndAttendanceCheckAndDepartmentId(LocalDate.now(), ATTENDANCE,
+        Integer thisWeekAttendance = attendanceRepository.countByAttendanceDateAndAttendanceStatusAndDepartmentId(LocalDate.now(), ATTENDANCE,
             departmentId).intValue();
         Integer departmentEnrollment = departmentRepository.findById(departmentId)
             .map(Department::getEnrollment)
@@ -60,13 +60,8 @@ public class DepartmentService {
         return DepartmentInfoResponse.of(smallGroupInfoList, departmentEnrollment, thisWeekAttendance);
     }
 
-    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate todayDate) {
-        List<Personnel> personnelList = personnelRepository.findByDepartmentId(departmentId);
-
-        return personnelList.stream()
-            .map(personnel -> DepartmentMemberListResponse.of(personnel, todayDate))
-            .collect(Collectors.toList());
-
+    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate date) {
+        return personnelRepository.findPersonnelListAttendanceByDate(null, null, departmentId, date);
     }
 
     public GroupAddResponse addGroup(Long departmentId, GroupAddRequest requestDto) {
@@ -151,7 +146,7 @@ public class DepartmentService {
 
         Attendance attendance = Attendance.builder()
             .attendanceDate(absenteeInfo.getAbsentDate())
-            .attendanceCheck(ABSENT)
+            .attendanceStatus(ABSENT)
             .department(department)
             .personnel(personnel)
             .build();
@@ -159,12 +154,12 @@ public class DepartmentService {
         return saveAttendanceToRecent(personnel, attendance, ABSENT);
     }
 
-    private Attendance saveAttendanceToRecent(Personnel personnel, Attendance attendance, AttendanceCheck attendanceCheck){
+    private Attendance saveAttendanceToRecent(Personnel personnel, Attendance attendance, AttendanceStatus attendanceStatus){
         Attendance recentAttendance = attendanceRepository.findTop1ByPersonnelIdOrderByAttendanceDateDesc(
                 personnel.getId()).orElse(attendance);
 
         if (recentAttendance.getAttendanceDate().isEqual(attendance.getAttendanceDate()) && !personnel.getAttendanceList().isEmpty()) {
-            recentAttendance.changeAttendanceCheck(attendanceCheck);
+            recentAttendance.changeAttendanceStatus(attendanceStatus);
             return recentAttendance;
         }
 
@@ -203,14 +198,14 @@ public class DepartmentService {
 
     @Transactional
     public List<DepartmentAttendanceMemberListResponse> attendanceDepartmentMember(Long departmentId,
-        DepartmentAttendanceMemberListRequest requestDto) {
+        DepartmentAttendanceMemberListRequest requestDto, LocalDate date) {
         List<AttendanceMemberInfo> memberList = requestDto.getAttendanceMemberList();
 
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new IllegalArgumentException());
 
         List<Personnel> personnelList = memberList.stream()
-            .map(member -> changePersonnelAttendance(member, department))
+            .map(member -> changePersonnelAttendance(member, department, date))
             .collect(Collectors.toList());
 
         return personnelList.stream()
@@ -218,18 +213,19 @@ public class DepartmentService {
             .collect(Collectors.toList());
     }
 
-    private Personnel changePersonnelAttendance(AttendanceMemberInfo member, Department department) {
+    private Personnel changePersonnelAttendance(AttendanceMemberInfo member, Department department, LocalDate attendanceDate) {
+
         Personnel personnel = personnelRepository.findById(member.getId())
             .orElseThrow(() -> new IllegalArgumentException());
 
         Attendance attendance = Attendance.builder()
-            .attendanceDate(member.getAttendanceDate())
-            .attendanceCheck(ATTENDANCE)
+            .attendanceDate(attendanceDate)
+            .attendanceStatus(member.getAttendanceStatus())
             .department(department)
             .personnel(personnel)
             .build();
 
-        saveAttendanceToRecent(personnel, attendance, ATTENDANCE);
+        saveAttendanceToRecent(personnel, attendance, member.getAttendanceStatus());
 
         return personnel;
     }

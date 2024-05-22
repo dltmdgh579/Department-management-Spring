@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
 import ministryofeducation.sideprojectspring.department.domain.Department;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 
 @NoArgsConstructor(access = PROTECTED)
 @Getter
@@ -29,7 +29,7 @@ public class Attendance extends BaseEntity {
     private Long id;
     private LocalDate attendanceDate;
     @Enumerated(EnumType.STRING)
-    private AttendanceCheck attendanceCheck;
+    private AttendanceStatus attendanceStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
@@ -40,28 +40,28 @@ public class Attendance extends BaseEntity {
     private Personnel personnel;
 
     @Builder
-    private Attendance(Long id, LocalDate attendanceDate, AttendanceCheck attendanceCheck, Department department,
+    private Attendance(Long id, LocalDate attendanceDate, AttendanceStatus attendanceStatus, Department department,
         Personnel personnel) {
         this.id = id;
         this.attendanceDate = attendanceDate;
-        this.attendanceCheck = attendanceCheck;
+        this.attendanceStatus = attendanceStatus;
         this.department = department;
         this.personnel = personnel;
     }
 
-    public static Attendance createAttendance(Long id, LocalDate attendanceDate, AttendanceCheck attendanceCheck, Department department,
+    public static Attendance createAttendance(Long id, LocalDate attendanceDate, AttendanceStatus attendanceStatus, Department department,
         Personnel personnel) {
         return Attendance.builder()
             .id(id)
             .attendanceDate(attendanceDate)
-            .attendanceCheck(attendanceCheck)
+            .attendanceStatus(attendanceStatus)
             .department(department)
             .personnel(personnel)
             .build();
     }
 
-    public void changeAttendanceCheck(AttendanceCheck attendanceCheck){
-        this.attendanceCheck = attendanceCheck;
+    public void changeAttendanceStatus(AttendanceStatus attendanceStatus){
+        this.attendanceStatus = attendanceStatus;
     }
 
     public void addPersonnel(Personnel personnel){

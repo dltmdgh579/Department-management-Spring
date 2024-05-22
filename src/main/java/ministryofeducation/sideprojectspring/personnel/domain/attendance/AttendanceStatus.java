@@ -1,5 +1,5 @@
 package ministryofeducation.sideprojectspring.personnel.domain.attendance;
 
-public enum AttendanceCheck {
+public enum AttendanceStatus {
     ATTENDANCE, ABSENT
 }

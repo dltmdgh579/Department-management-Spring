@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import ministryofeducation.sideprojectspring.common.BaseEntity;
 import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.domain.SmallGroup;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 import java.time.LocalDate;
@@ -114,11 +114,11 @@ public class Personnel extends BaseEntity {
         attendance.addPersonnel(this);
     }
 
-    public AttendanceCheck todayAttendance(LocalDate today) {
+    public AttendanceStatus todayAttendance(LocalDate today) {
         if(this.attendanceList.isEmpty()) return null;
         Attendance attendance = this.attendanceList.get(attendanceList.size() - 1);
         if (attendance.getAttendanceDate() == today) {
-            return attendance.getAttendanceCheck();
+            return attendance.getAttendanceStatus();
         }
         return null;
     }

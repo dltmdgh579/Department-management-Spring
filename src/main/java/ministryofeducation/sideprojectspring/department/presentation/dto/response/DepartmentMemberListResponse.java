@@ -5,8 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 
 @Getter
@@ -20,11 +19,11 @@ public class DepartmentMemberListResponse {
     private String address;
     private String profileImage;
     private DepartmentType departmentType;
-    private AttendanceCheck attendanceCheck;
+    private AttendanceStatus attendanceStatus;
 
     @Builder
     public DepartmentMemberListResponse(Long id, String name, LocalDate dateOfBirth, String phone,
-        String address, String profileImage, DepartmentType departmentType, AttendanceCheck attendanceCheck) {
+        String address, String profileImage, DepartmentType departmentType, AttendanceStatus attendanceStatus) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -32,21 +31,7 @@ public class DepartmentMemberListResponse {
         this.address = address;
         this.profileImage = profileImage;
         this.departmentType = departmentType;
-        this.attendanceCheck = attendanceCheck;
+        this.attendanceStatus = attendanceStatus;
     }
 
-    public static DepartmentMemberListResponse of(Personnel personnel, LocalDate today) {
-        AttendanceCheck todayAttendance = personnel.todayAttendance(today);
-
-        return DepartmentMemberListResponse.builder()
-            .id(personnel.getId())
-            .name(personnel.getName())
-            .dateOfBirth(personnel.getDateOfBirth())
-            .phone(personnel.getPhone())
-            .address(personnel.getAddress())
-            .profileImage(personnel.getProfileImage())
-            .departmentType(personnel.getDepartmentType())
-            .attendanceCheck(todayAttendance)
-            .build();
-    }
 }

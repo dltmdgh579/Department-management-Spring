@@ -1,7 +1,7 @@
 package ministryofeducation.sideprojectspring.unit.department.presentation;
 
 import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.testPersonnel;
-import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -27,8 +27,6 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
-import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -275,13 +273,13 @@ class DepartmentControllerTest extends ControllerTest {
             .id(1l)
             .name("test1")
             .departmentType(JOSHUA)
-            .attendanceCheck(ABSENT)
+            .attendanceStatus(ABSENT)
             .build();
         DepartmentMemberListResponse departmentMemberListResponse2 = DepartmentMemberListResponse.builder()
             .id(2l)
             .name("test2")
             .departmentType(JOSHUA)
-            .attendanceCheck(ABSENT)
+            .attendanceStatus(ABSENT)
             .build();
 
         given(departmentService.getDepartmentMemberList(anyLong(), any(LocalDate.class)))
@@ -289,7 +287,7 @@ class DepartmentControllerTest extends ControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(
-            get("/api/{departmentId}/list/{todayDate}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            get("/api/{departmentId}/attendance/{date}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
         //then
         perform
@@ -313,12 +311,13 @@ class DepartmentControllerTest extends ControllerTest {
             .name("test2")
             .build();
 
-        given(departmentService.attendanceDepartmentMember(anyLong(), any(DepartmentAttendanceMemberListRequest.class)))
+        given(departmentService.attendanceDepartmentMember(anyLong(), any(DepartmentAttendanceMemberListRequest.class), any(
+            LocalDate.class)))
             .willReturn(List.of(response1, response2));
 
         //when
         ResultActions perform = mockMvc.perform(
-            post("/api/{departmentId}/attendance", 1l)
+            post("/api/{departmentId}/attendance/{date}", 1l, today)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON));
 

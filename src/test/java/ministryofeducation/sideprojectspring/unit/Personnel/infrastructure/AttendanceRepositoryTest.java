@@ -1,6 +1,6 @@
 package ministryofeducation.sideprojectspring.unit.Personnel.infrastructure;
 
-import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck.*;
+import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -10,7 +10,7 @@ import ministryofeducation.sideprojectspring.department.domain.Department;
 import ministryofeducation.sideprojectspring.department.infrastructure.DepartmentRepository;
 import ministryofeducation.sideprojectspring.personnel.domain.Attendance;
 import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
-import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceCheck;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +60,7 @@ class AttendanceRepositoryTest {
 
         //then
         assertThat(recentAttendance.getAttendanceDate()).isEqualTo(recentDate);
-        assertThat(recentAttendance.getAttendanceCheck()).isEqualTo(ABSENT);
+        assertThat(recentAttendance.getAttendanceStatus()).isEqualTo(ABSENT);
     }
 
     @DisplayName("해당 날짜의 부서 출석 인원을 조회한다.")
@@ -93,7 +93,7 @@ class AttendanceRepositoryTest {
         attendanceRepository.saveAll(List.of(attendance1, attendance2, attendance3));
 
         //when
-        Long attendanceCount = attendanceRepository.countByAttendanceDateAndAttendanceCheckAndDepartmentId(testDate, ATTENDANCE,
+        Long attendanceCount = attendanceRepository.countByAttendanceDateAndAttendanceStatusAndDepartmentId(testDate, ATTENDANCE,
             department.getId());
 
         //then
@@ -101,10 +101,10 @@ class AttendanceRepositoryTest {
     }
 
     private Attendance buildAttendance(LocalDate recentDate, Personnel personnel, Department department,
-        AttendanceCheck attendanceCheck) {
+        AttendanceStatus attendanceStatus) {
         return Attendance.builder()
             .attendanceDate(recentDate)
-            .attendanceCheck(attendanceCheck)
+            .attendanceStatus(attendanceStatus)
             .department(department)
             .personnel(personnel)
             .build();

@@ -49,12 +49,12 @@ public class DepartmentController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/{departmentId}/list/{todayDate}")
+    @GetMapping("/{departmentId}/attendance/{date}")
     public ResponseEntity<List<DepartmentMemberListResponse>> departmentMemberList(
         @PathVariable("departmentId") Long departmentId,
-        @PathVariable("todayDate") String todayDate){
+        @PathVariable("date") String date){
         List<DepartmentMemberListResponse> responseDto = departmentService.getDepartmentMemberList(
-            departmentId, LocalDate.parse(todayDate, DateTimeFormatter.ISO_DATE));
+            departmentId, LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
 
         return ResponseEntity.ok(responseDto);
     }
@@ -120,12 +120,13 @@ public class DepartmentController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping("/{departmentId}/attendance")
+    @PostMapping("/{departmentId}/attendance/{date}")
     public ResponseEntity<List<DepartmentAttendanceMemberListResponse>> attendanceDepartmentMember(
         @RequestBody DepartmentAttendanceMemberListRequest requestDto,
-        @PathVariable("departmentId") Long departmentId) {
+        @PathVariable("departmentId") Long departmentId,
+        @PathVariable("date") String date) {
         List<DepartmentAttendanceMemberListResponse> responseDto = departmentService.attendanceDepartmentMember(
-            departmentId, requestDto);
+            departmentId, requestDto, LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
 
         return ResponseEntity.ok(responseDto);
     }

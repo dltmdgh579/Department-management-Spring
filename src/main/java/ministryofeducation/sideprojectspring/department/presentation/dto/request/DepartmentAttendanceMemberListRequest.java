@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,13 +24,13 @@ public class DepartmentAttendanceMemberListRequest {
     public static class AttendanceMemberInfo{
         private Long id;
         private String name;
-        private LocalDate attendanceDate;
+        private AttendanceStatus attendanceStatus;
 
         @Builder
-        public AttendanceMemberInfo(Long id, String name, LocalDate attendanceDate) {
+        public AttendanceMemberInfo(Long id, String name, AttendanceStatus attendanceStatus) {
             this.id = id;
             this.name = name;
-            this.attendanceDate = attendanceDate;
+            this.attendanceStatus = attendanceStatus;
         }
     }
 

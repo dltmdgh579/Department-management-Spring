@@ -1,19 +1,20 @@
 package ministryofeducation.sideprojectspring.personnel.infrastructure;
 
+import static ministryofeducation.sideprojectspring.personnel.domain.QAttendance.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.QPersonnel.*;
 import static ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest.*;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
+import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Gender;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
@@ -26,6 +27,30 @@ import org.springframework.stereotype.Repository;
 public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository {
 
     private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<DepartmentMemberListResponse> findPersonnelListAttendanceByDate(PersonnelFilterCondRequest filterCond,
+        PersonnelOrderCondRequest orderCond, Long departmentId, LocalDate date) {
+        OrderSpecifier[] orderSpecifiers = createOrderSpecifier(orderCond);
+
+        return queryFactory
+            .select(Projections.constructor(DepartmentMemberListResponse.class,
+                personnel.id,
+                personnel.name,
+                personnel.dateOfBirth,
+                personnel.phone,
+                personnel.address,
+                personnel.profileImage,
+                personnel.departmentType,
+                attendance.attendanceStatus
+            ))
+            .from(attendance)
+            .rightJoin(attendance.personnel, personnel)
+            .on(attendance.attendanceDate.eq(date))
+            .where(filterEq(filterCond), personnel.department.id.eq(departmentId))
+            .orderBy(orderSpecifiers)
+            .fetch();
+    }
 
     @Override
     public List<PersonnelListResponse> findAllByCondition(PersonnelFilterCondRequest filterCond,
@@ -71,7 +96,7 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
 
     private BooleanExpression filterEq(PersonnelFilterCondRequest filterCond) {
         final BooleanExpression[] booleanExpressionDepartmentType = new BooleanExpression[1];
-        if (!filterCond.getDepartmentTypeList().isEmpty()) {
+        if (filterCond != null && !filterCond.getDepartmentTypeList().isEmpty()) {
             booleanExpressionDepartmentType[0] = (departmentTypeEq(filterCond.getDepartmentTypeList().get(0)));
 
             filterCond.getDepartmentTypeList().stream()
@@ -85,7 +110,7 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
         }
 
         BooleanExpression booleanExpressionGender;
-        if (!Objects.isNull(filterCond.getGender())) {
+        if (filterCond != null && !Objects.isNull(filterCond.getGender())) {
             booleanExpressionGender = genderEq(filterCond.getGender());
         } else {
             booleanExpressionGender = null;

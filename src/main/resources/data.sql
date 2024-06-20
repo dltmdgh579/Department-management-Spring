@@ -19,9 +19,9 @@
 --values('test3', 'W', '1997-08-26', '010-0000-0003', '032-000-0003', 'test3Email@gmail.com', '고잉메리호', '인천광역시 서구 석남동', '', 'JOSHUA', 4, 2);
 --
 ---- 출석기록
---insert into attendance(attendance_date, attendance_check, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 4, 1);
---insert into attendance(attendance_date, attendance_check, department_id, personnel_id) values('2023-12-10', 'ABSENT', 4, 2);
---insert into attendance(attendance_date, attendance_check, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 4, 3);
---insert into attendance(attendance_date, attendance_check, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 3, 2);
---insert into attendance(attendance_date, attendance_check, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 1, 1);
---insert into attendance(attendance_date, attendance_check, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 2, 1);
+--insert into attendance(attendance_date, attendance_status, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 4, 1);
+--insert into attendance(attendance_date, attendance_status, department_id, personnel_id) values('2023-12-10', 'ABSENT', 4, 2);
+--insert into attendance(attendance_date, attendance_status, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 4, 3);
+--insert into attendance(attendance_date, attendance_status, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 3, 2);
+--insert into attendance(attendance_date, attendance_status, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 1, 1);
+--insert into attendance(attendance_date, attendance_status, department_id, personnel_id) values('2023-12-10', 'ATTENDANCE', 2, 1);

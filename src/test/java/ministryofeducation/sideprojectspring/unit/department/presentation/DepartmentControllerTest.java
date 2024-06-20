@@ -4,6 +4,7 @@ import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.tes
 import static ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.*;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,11 +33,13 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DepartmentControllerTest extends ControllerTest {
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 홈_화면의_부서_리스트를_조회한다() throws Exception {
         //given
@@ -60,6 +63,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 부서_정보를_조회한다() throws Exception {
         //given
@@ -94,6 +98,7 @@ class DepartmentControllerTest extends ControllerTest {
 
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 부서_내_그룹을_추가한다() throws Exception {
         //given
@@ -107,7 +112,8 @@ class DepartmentControllerTest extends ControllerTest {
         //when
         ResultActions perform = mockMvc.perform(post("/api/{departmentId}", 1l)
             .content(objectMapper.writeValueAsString(request))
-            .contentType(MediaType.APPLICATION_JSON));
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()));
 
         //then
         perform
@@ -115,6 +121,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("name").value("newGroup"));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 부서_내_그룹_이름을_수정한다() throws Exception {
         //given
@@ -130,7 +137,8 @@ class DepartmentControllerTest extends ControllerTest {
         //when
         ResultActions perform = mockMvc.perform(post("/api/{departmentId}/{groupId}/modify", 1l, 1l)
             .content(objectMapper.writeValueAsString(request))
-            .contentType(MediaType.APPLICATION_JSON));
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()));
 
         //then
         perform
@@ -138,6 +146,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("name").value("modifyGroupName"));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 부서_내_그룹_정보를_조회한다() throws Exception {
         //given
@@ -165,6 +174,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 그룹_내_결석인원을_조회한다() throws Exception {
         //given
@@ -189,6 +199,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 그룹_내_결석인원을_저장한다() throws Exception {
         //given
@@ -225,6 +236,7 @@ class DepartmentControllerTest extends ControllerTest {
             post("/api/{departmentId}/{groupId}/absent", 1l, 1l)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
         );
 
         //then
@@ -233,6 +245,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 그룹_내_인원을_추가한다() throws Exception {
         //given
@@ -256,6 +269,7 @@ class DepartmentControllerTest extends ControllerTest {
             post("/api/{departmentId}/{groupId}/add", 1l, 1l)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
         );
 
         //then
@@ -264,6 +278,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 부서_내_모든_인원을_조회한다() throws Exception {
         //given
@@ -295,6 +310,7 @@ class DepartmentControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @Test
     void 부서_내_인원에_대한_출석체크를_반영한다() throws Exception {
         //given
@@ -319,7 +335,8 @@ class DepartmentControllerTest extends ControllerTest {
         ResultActions perform = mockMvc.perform(
             post("/api/{departmentId}/attendance/{date}", 1l, today)
                 .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()));
 
         //then
         perform

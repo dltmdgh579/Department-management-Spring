@@ -4,6 +4,7 @@ import static ministryofeducation.sideprojectspring.factory.PersonnelFactory.*;
 import static ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType.JOSHUA;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,10 +28,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 class PersonnelControllerTest extends ControllerTest {
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @DisplayName("전체 인원 리스트를 조회할 수 있다.")
     @Test
     public void personnelList() throws Exception {
@@ -60,6 +63,7 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(3));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @DisplayName("전체 인원 리스트를 조회할 수 있다. - 모든 param은 required false")
     @Test
     public void personnelList_no_param() throws Exception {
@@ -81,6 +85,7 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(3));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @DisplayName("이름 검색어로 인원을 조회한다.")
     @Test
     public void searchPersonnel() throws Exception {
@@ -111,6 +116,7 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @DisplayName("이름 검색어로 인원을 조회한다. - 모든 param은 required false")
     @Test
     public void searchPersonnel_no_param() throws Exception {
@@ -131,6 +137,7 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @DisplayName("인원 상세정보를 조회할 수 있다.")
     @Test
     public void personnelDetail() throws Exception{
@@ -148,6 +155,7 @@ class PersonnelControllerTest extends ControllerTest {
             .andExpect(jsonPath("$.name").value("test"));
     }
 
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     @DisplayName("새로운 인원을 추가한다.")
     @Test
     void personnelPost() throws Exception {
@@ -179,6 +187,7 @@ class PersonnelControllerTest extends ControllerTest {
             multipart("/api/personnel/post")
                 .file(profileImage)
                 .file(requestDto)
+                .with(csrf())
         );
 
         //then

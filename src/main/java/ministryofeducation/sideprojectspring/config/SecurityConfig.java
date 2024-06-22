@@ -17,7 +17,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +24,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -52,6 +54,9 @@ public class SecurityConfig {
                     .requestMatchers(new AntPathRequestMatcher("/api/**")).hasRole("ADMIN")
                     .anyRequest().authenticated()
             )
+            .rememberMe(remember -> remember
+                .rememberMeServices(rememberMeServices(userDetailsService(memberRepository)))
+            )
             .addFilterBefore(userIdPasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .build();
@@ -64,6 +69,7 @@ public class SecurityConfig {
         filter.setAuthenticationSuccessHandler(new LoginSuccessHandler());
         filter.setAuthenticationFailureHandler(new LoginFailureHandler());
         filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+        filter.setRememberMeServices(rememberMeServices(userDetailsService(memberRepository)));
         return filter;
     }
 
@@ -72,6 +78,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService(memberRepository));
         provider.setPasswordEncoder(passwordEncoder());
+
         return new ProviderManager(provider);
     }
 
@@ -94,6 +101,15 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
+        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices("rydbrqn", userDetailsService, RememberMeTokenAlgorithm.SHA256);
+        rememberMe.setParameter("rememberMe");
+        rememberMe.setAlwaysRemember(true);
+        rememberMe.setTokenValiditySeconds(2592000);
+        return rememberMe;
     }
 
     @Bean

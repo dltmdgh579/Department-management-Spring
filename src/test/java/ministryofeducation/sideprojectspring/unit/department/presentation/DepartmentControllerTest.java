@@ -28,6 +28,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -297,12 +298,14 @@ class DepartmentControllerTest extends ControllerTest {
             .attendanceStatus(ABSENT)
             .build();
 
-        given(departmentService.getDepartmentMemberList(anyLong(), any(LocalDate.class)))
+        given(departmentService.getDepartmentMemberList(anyLong(), any(LocalDate.class), any(PersonnelOrderCondRequest.class)))
             .willReturn(List.of(departmentMemberListResponse1, departmentMemberListResponse2));
 
         //when
         ResultActions perform = mockMvc.perform(
-            get("/api/{departmentId}/attendance/{date}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            get("/api/{departmentId}/attendance/{date}", 4l, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                    .param("order", "ATTENDANCE")
+        );
 
         //then
         perform

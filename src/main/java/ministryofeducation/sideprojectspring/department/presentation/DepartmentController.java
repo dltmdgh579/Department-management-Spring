@@ -20,13 +20,9 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -52,9 +48,10 @@ public class DepartmentController {
     @GetMapping("/{departmentId}/attendance/{date}")
     public ResponseEntity<List<DepartmentMemberListResponse>> departmentMemberList(
         @PathVariable("departmentId") Long departmentId,
-        @PathVariable("date") String date){
+        @PathVariable("date") String date,
+        @RequestParam(value = "order", required = false) PersonnelOrderCondRequest orderCond){
         List<DepartmentMemberListResponse> responseDto = departmentService.getDepartmentMemberList(
-            departmentId, LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+            departmentId, LocalDate.parse(date, DateTimeFormatter.ISO_DATE), orderCond);
 
         return ResponseEntity.ok(responseDto);
     }

@@ -4,10 +4,14 @@ import static ministryofeducation.sideprojectspring.personnel.domain.QAttendance
 import static ministryofeducation.sideprojectspring.personnel.domain.QPersonnel.*;
 import static ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest.*;
 
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,6 +20,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.DepartmentMemberListResponse;
 import ministryofeducation.sideprojectspring.personnel.domain.Gender;
+import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 import ministryofeducation.sideprojectspring.personnel.domain.department_type.DepartmentType;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
@@ -34,22 +39,22 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
         OrderSpecifier[] orderSpecifiers = createOrderSpecifier(orderCond);
 
         return queryFactory
-            .select(Projections.constructor(DepartmentMemberListResponse.class,
-                personnel.id,
-                personnel.name,
-                personnel.dateOfBirth,
-                personnel.phone,
-                personnel.address,
-                personnel.profileImage,
-                personnel.departmentType,
-                attendance.attendanceStatus
-            ))
-            .from(attendance)
-            .rightJoin(attendance.personnel, personnel)
-            .on(attendance.attendanceDate.eq(date))
-            .where(filterEq(filterCond), personnel.department.id.eq(departmentId))
-            .orderBy(orderSpecifiers)
-            .fetch();
+                .select(Projections.constructor(DepartmentMemberListResponse.class,
+                        personnel.id,
+                        personnel.name,
+                        personnel.dateOfBirth,
+                        personnel.phone,
+                        personnel.address,
+                        personnel.profileImage,
+                        personnel.departmentType,
+                        attendance.attendanceStatus
+                ))
+                .from(personnel)
+                .leftJoin(personnel.attendanceList, attendance)
+                .on(attendance.attendanceDate.eq(date))
+                .where(personnel.department.id.eq(departmentId))
+                .orderBy(orderSpecifiers)
+                .fetch();
     }
 
     @Override
@@ -139,16 +144,25 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 
         if (Objects.isNull(orderCond)) {
-            orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
+            orderSpecifiers.add(new OrderSpecifier(Order.DESC, calAttendanceCountLastYear()));
         } else if (orderCond.equals(AGE)) {
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.dateOfBirth));
         } else if (orderCond.equals(NAME)) {
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
+        } else if (orderCond.equals(ATTENDANCE)) {
+            orderSpecifiers.add(new OrderSpecifier(Order.DESC, calAttendanceCountLastYear()));
         }
         return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
     }
 
     private BooleanExpression searchWord(String[] searchWordRange){
         return searchWordRange != null? personnel.name.between(searchWordRange[0], searchWordRange[1]) : null;
+    }
+
+    private static JPQLQuery<Long> calAttendanceCountLastYear() {
+        return JPAExpressions.select(attendance.count())
+                .from(attendance)
+                .where(attendance.personnel.eq(personnel)
+                        .and(attendance.attendanceStatus.eq(AttendanceStatus.ATTENDANCE)));
     }
 }

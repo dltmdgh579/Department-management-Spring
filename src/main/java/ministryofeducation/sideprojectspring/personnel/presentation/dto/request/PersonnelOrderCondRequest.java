@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public enum PersonnelOrderCondRequest {
 
-    AGE, NAME
+    AGE, NAME, ATTENDANCE
 
 }

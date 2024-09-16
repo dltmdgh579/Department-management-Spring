@@ -144,7 +144,7 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 
         if (Objects.isNull(orderCond)) {
-            orderSpecifiers.add(new OrderSpecifier(Order.DESC, calAttendanceCountLastYear()));
+            orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.name));
         } else if (orderCond.equals(AGE)) {
             orderSpecifiers.add(new OrderSpecifier(Order.DESC, personnel.dateOfBirth));
         } else if (orderCond.equals(NAME)) {

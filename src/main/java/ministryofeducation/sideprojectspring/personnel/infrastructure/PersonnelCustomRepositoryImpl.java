@@ -45,6 +45,7 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
                         personnel.dateOfBirth,
                         personnel.phone,
                         personnel.address,
+                        personnel.gender,
                         personnel.profileImage,
                         personnel.departmentType,
                         attendance.attendanceStatus

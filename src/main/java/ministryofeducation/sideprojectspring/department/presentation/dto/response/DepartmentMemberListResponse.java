@@ -22,10 +22,11 @@ public class DepartmentMemberListResponse {
     private String profileImage;
     private DepartmentType departmentType;
     private AttendanceStatus attendanceStatus;
+    private Long attendanceCount;
 
     @Builder
     public DepartmentMemberListResponse(Long id, String name, LocalDate dateOfBirth, String phone, String address,
-            Gender gender, String profileImage, DepartmentType departmentType, AttendanceStatus attendanceStatus) {
+            Gender gender, String profileImage, DepartmentType departmentType, AttendanceStatus attendanceStatus, Long attendanceCount) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -35,5 +36,6 @@ public class DepartmentMemberListResponse {
         this.profileImage = profileImage;
         this.departmentType = departmentType;
         this.attendanceStatus = attendanceStatus;
+        this.attendanceCount = attendanceCount;
     }
 }

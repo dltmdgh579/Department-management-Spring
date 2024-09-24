@@ -20,6 +20,8 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
+import ministryofeducation.sideprojectspring.personnel.domain.Gender;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,9 +51,11 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentMemberListResponse>> departmentMemberList(
         @PathVariable("departmentId") Long departmentId,
         @PathVariable("date") String date,
+        @RequestParam(value = "gender", required = false) Gender genderFilter,
         @RequestParam(value = "order", required = false) PersonnelOrderCondRequest orderCond){
-        List<DepartmentMemberListResponse> responseDto = departmentService.getDepartmentMemberList(
-            departmentId, LocalDate.parse(date, DateTimeFormatter.ISO_DATE), orderCond);
+        List<DepartmentMemberListResponse> responseDto =
+                departmentService.getDepartmentMemberList(departmentId, LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
+                    new PersonnelFilterCondRequest(null, genderFilter), orderCond);
 
         return ResponseEntity.ok(responseDto);
     }

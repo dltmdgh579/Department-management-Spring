@@ -48,12 +48,14 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
                         personnel.gender,
                         personnel.profileImage,
                         personnel.departmentType,
-                        attendance.attendanceStatus
+                        attendance.attendanceStatus,
+                        calAttendanceCountLastYear()
                 ))
                 .from(personnel)
                 .leftJoin(personnel.attendanceList, attendance)
                 .on(attendance.attendanceDate.eq(date))
-                .where(personnel.department.id.eq(departmentId))
+                .where(personnel.department.id.eq(departmentId)
+                .and(genderEq(filterCond.getGender())))
                 .orderBy(orderSpecifiers)
                 .fetch();
     }

@@ -34,6 +34,7 @@ import ministryofeducation.sideprojectspring.personnel.domain.Personnel;
 import ministryofeducation.sideprojectspring.personnel.domain.attendance.AttendanceStatus;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.AttendanceRepository;
 import ministryofeducation.sideprojectspring.personnel.infrastructure.PersonnelRepository;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +62,8 @@ public class DepartmentService {
         return DepartmentInfoResponse.of(smallGroupInfoList, departmentEnrollment, thisWeekAttendance);
     }
 
-    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate date, PersonnelOrderCondRequest orderCond) {
-        return personnelRepository.findPersonnelListAttendanceByDate(null, orderCond, departmentId, date);
+    public List<DepartmentMemberListResponse> getDepartmentMemberList(Long departmentId, LocalDate date, PersonnelFilterCondRequest filterCond, PersonnelOrderCondRequest orderCond) {
+        return personnelRepository.findPersonnelListAttendanceByDate(filterCond, orderCond, departmentId, date);
     }
 
     public GroupAddResponse addGroup(Long departmentId, GroupAddRequest requestDto) {

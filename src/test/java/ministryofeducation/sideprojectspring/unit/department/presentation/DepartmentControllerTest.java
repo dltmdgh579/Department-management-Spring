@@ -28,6 +28,7 @@ import ministryofeducation.sideprojectspring.department.presentation.dto.respons
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupAddResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupInfoResponse;
 import ministryofeducation.sideprojectspring.department.presentation.dto.response.GroupModifyResponse;
+import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelFilterCondRequest;
 import ministryofeducation.sideprojectspring.personnel.presentation.dto.request.PersonnelOrderCondRequest;
 import ministryofeducation.sideprojectspring.unit.ControllerTest;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -298,7 +299,8 @@ class DepartmentControllerTest extends ControllerTest {
             .attendanceStatus(ABSENT)
             .build();
 
-        given(departmentService.getDepartmentMemberList(anyLong(), any(LocalDate.class), any(PersonnelOrderCondRequest.class)))
+        given(departmentService.getDepartmentMemberList(anyLong(), any(LocalDate.class),
+                any(PersonnelFilterCondRequest.class), any(PersonnelOrderCondRequest.class)))
             .willReturn(List.of(departmentMemberListResponse1, departmentMemberListResponse2));
 
         //when

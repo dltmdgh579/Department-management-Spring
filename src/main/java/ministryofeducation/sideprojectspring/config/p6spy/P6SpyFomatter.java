@@ -1,4 +1,4 @@
-package ministryofeducation.sideprojectspring.config;
+package ministryofeducation.sideprojectspring.config.p6spy;
 
 import com.p6spy.engine.logging.Category;
 import com.p6spy.engine.spy.appender.MessageFormattingStrategy;

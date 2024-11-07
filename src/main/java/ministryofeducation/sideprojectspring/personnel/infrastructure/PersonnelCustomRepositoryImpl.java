@@ -103,32 +103,35 @@ public class PersonnelCustomRepositoryImpl implements PersonnelCustomRepository 
     }
 
     private BooleanExpression filterEq(PersonnelFilterCondRequest filterCond) {
-        final BooleanExpression[] booleanExpressionDepartmentType = new BooleanExpression[1];
-        if (filterCond != null && !filterCond.getDepartmentTypeList().isEmpty()) {
-            booleanExpressionDepartmentType[0] = (departmentTypeEq(filterCond.getDepartmentTypeList().get(0)));
-
-            filterCond.getDepartmentTypeList().stream()
-                .filter(departmentType -> !departmentType.equals(filterCond.getDepartmentTypeList().get(0)))
-                .forEach(
-                    departmentType -> booleanExpressionDepartmentType[0] = (
-                        departmentTypeEqOr(booleanExpressionDepartmentType[0], departmentType))
-                );
-        } else {
-            booleanExpressionDepartmentType[0] = null;
+        if (filterCond == null) {
+            return null;
         }
 
-        BooleanExpression booleanExpressionGender;
-        if (filterCond != null && !Objects.isNull(filterCond.getGender())) {
-            booleanExpressionGender = genderEq(filterCond.getGender());
-        } else {
-            booleanExpressionGender = null;
+        BooleanExpression departmentTypeExpression = getDepartmentTypeExpression(filterCond.getDepartmentTypeList());
+        BooleanExpression genderExpression = getGenderExpression(filterCond.getGender());
+
+        return combineExpressions(departmentTypeExpression, genderExpression);
+    }
+
+    private BooleanExpression getDepartmentTypeExpression(List<DepartmentType> departmentTypes) {
+        if (departmentTypes == null || departmentTypes.isEmpty()) {
+            return null;
         }
 
-        if (booleanExpressionDepartmentType[0] == null) {
-            return booleanExpressionGender;
-        }
+        return departmentTypes.stream()
+            .map(this::departmentTypeEq)
+            .reduce(BooleanExpression::or)
+            .orElse(null);
+    }
 
-        return booleanExpressionDepartmentType[0].and(booleanExpressionGender);
+    private BooleanExpression getGenderExpression(Gender gender) {
+        return genderEq(gender);
+    }
+
+    private BooleanExpression combineExpressions(BooleanExpression expr1, BooleanExpression expr2) {
+        if (expr1 == null) return expr2;
+        if (expr2 == null) return expr1;
+        return expr1.and(expr2);
     }
 
     private BooleanExpression departmentTypeEq(DepartmentType departmentType) {
